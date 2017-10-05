@@ -1,0 +1,15 @@
+{
+	"name": "nifty",
+	"version": "1.0.0",
+	"description": "nifty is a lite orm for typescript",
+	"keywords": [
+		"postgres",
+		"pg",
+		"libpq",
+		"database",
+		"orm"
+	],
+	"homepage": "https://github.com/blendlabs/nifty",
+	"author": "Will Charczuk",
+	"main": "./lib"
+}
