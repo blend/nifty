@@ -11,5 +11,10 @@
 	],
 	"homepage": "https://github.com/blendlabs/nifty",
 	"author": "Will Charczuk",
-	"main": "./lib"
+	"main": "./lib",
+	"dependencies": {
+		"pg": "^7.3.0",
+		"promise": "^8.0.1",
+		"reflect-metadata": "^0.1.10"
+	}
 }
