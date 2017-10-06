@@ -13,6 +13,7 @@
 	"author": "Will Charczuk",
 	"main": "./lib",
 	"dependencies": {
+		"@types/es6-promise": "0.0.33",
 		"pg": "^7.3.0",
 		"promise": "^8.0.1",
 		"reflect-metadata": "^0.1.10"
