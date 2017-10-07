@@ -1,6 +1,8 @@
+import { DatabaseMapped } from "./interfaces";
+
 const __metacache = new Map<string, Columns>();
 
-function AddModelColumn(target: DatabaseMapped, column: ColumnInfo) {
+export function AddModelColumn(target: DatabaseMapped, column: ColumnInfo) {
   const tableName = target.TableName();
   if (!__metacache.has(tableName)) {
     __metacache.set(tableName, new Columns(new Array<ColumnInfo>(column)));
@@ -12,6 +14,6 @@ function AddModelColumn(target: DatabaseMapped, column: ColumnInfo) {
   }
 }
 
-function ColumnsFor(tableName: string): Columns | undefined {
+export function ColumnsFor(tableName: string): Columns | undefined {
   return __metacache.get(tableName);
 }

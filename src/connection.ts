@@ -1,7 +1,8 @@
 import { Pool, PoolConfig, Client } from "pg";
+import { Invocation } from "./invocation";
 
 // Connection represents the metadata used to make the initial conneciton.
-class Connection {
+export class Connection {
   Host: string;
   Port: number;
   Database: string;

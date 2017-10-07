@@ -1,3 +1,6 @@
+import { Connection } from "./connection";
+import { DatabaseMapped } from "./interfaces";
+
 // MetadataTest is a class the implements database mapped.
 class MetadataTest implements DatabaseMapped {
   ID: number;

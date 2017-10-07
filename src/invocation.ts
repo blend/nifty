@@ -1,6 +1,6 @@
 import { Pool, QueryResult } from "pg";
 
-class Invocation {
+export class Invocation {
   Label: string;
   Pool: Pool;
 

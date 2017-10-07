@@ -1,3 +1,6 @@
+import { DatabaseMapped } from "./interfaces";
+import { AddModelColumn } from "./metacache";
+
 // Table defines the mapping relationship between the type and a relation in the database.
 function Table(name?: string) {}
 

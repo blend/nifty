@@ -1,7 +1,7 @@
-interface Populatable {
+export interface Populatable {
   Populate(): void;
 }
 
-interface DatabaseMapped {
+export interface DatabaseMapped {
   TableName(): string;
 }
