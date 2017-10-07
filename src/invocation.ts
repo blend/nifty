@@ -26,8 +26,15 @@ export class Invocation {
 
     const colNames = writeCols.ColumnNames().join(",");
     const colValues = writeCols.ColumnValues(obj);
+    const tokens = writeCols.Tokens().join(",");
 
     let queryBody = `INSERT INTO ${tableName} (${colNames}) VALUES (${tokens})`;
+
+    if (serials.Len() > 0) {
+      queryBody = queryBody + ` RETURNING ${serials.First().Name}`;
+    }
+
+    let res = await this.Pool.query(queryBody, colValues);
   }
   public async CreateMany<T>(objs: T[]) {}
   public async Update<T>(obj: T) {}
