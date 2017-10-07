@@ -1,4 +1,7 @@
 import { Pool, QueryResult } from "pg";
+import { Columns } from "./columns";
+import { ColumnsFor } from "./metacache";
+import { DatabaseMapped } from "./interfaces";
 
 export class Invocation {
   Label: string;
@@ -15,7 +18,17 @@ export class Invocation {
 
   public async Get<T>(id: any) {}
   public async GetAll<T>() {}
-  public async Create<T>(obj: T) {}
+  public async Create(obj: DatabaseMapped) {
+    const tableName = obj.TableName();
+    const cols = ColumnsFor(tableName);
+    const writeCols = cols.NotReadOnly().NotSerial();
+    const serials = cols.Serial();
+
+    const colNames = writeCols.ColumnNames().join(",");
+    const colValues = writeCols.ColumnValues(obj);
+
+    let queryBody = `INSERT INTO ${tableName} (${colNames}) VALUES (${tokens})`;
+  }
   public async CreateMany<T>(objs: T[]) {}
   public async Update<T>(obj: T) {}
   public async Upsert<T>(obj: T) {}

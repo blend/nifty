@@ -1,23 +1,68 @@
-class Columns {
+import { ColumnInfo } from "./column_info";
+import { DatabaseMapped } from "./interfaces";
+
+export class Columns {
   All: Array<ColumnInfo>;
   Lookup: Map<string, ColumnInfo>;
 
-  constructor(cols: Array<ColumnInfo>) {
+  constructor() {}
+
+  // Add
+  public Add(col: ColumnInfo): Columns {
+    this.All.push(col);
+    this.Lookup.set(col.Name, col);
+    return this;
+  }
+
+  public AddMany(cols: Array<ColumnInfo>): Columns {
     this.All = cols;
     for (var i = 0; i < cols.length; i++) {
       this.Lookup.set(cols[i].Name, cols[i]);
     }
-  }
-
-  // Add
-  public Add(col: ColumnInfo) {
-    this.All.push(col);
-    this.Lookup.set(col.Name, col);
+    return this;
   }
 
   // Copy returns a new collection.
   public Copy(): Columns {
-    return new Columns(this.All);
+    return new Columns().AddMany(this.All);
+  }
+
+  // First returns the first column in the collection.
+  public First(): ColumnInfo {
+    if (this.All.length == 0) {
+      return new ColumnInfo();
+    }
+    return this.All[0];
+  }
+
+  // Len returns the number of columns.
+  public Len(): number {
+    return this.All.length;
+  }
+
+  public ColumnNames(): Array<string> {
+    let names = new Array<string>();
+    for (var col of this.All) {
+      names.push(col.Name);
+    }
+    return names;
+  }
+
+  // ColumnValues returns the value for each column on a given object.
+  public ColumnValues(instance: DatabaseMapped): Array<any> {
+    let values = new Array<any>();
+    for (var col of this.All) {
+      values.push(col.Get(instance));
+    }
+    return values;
+  }
+
+  public Tokens(): Array<string> {
+    let tokens = new Array<string>();
+    for (var i = 0; i < this.All.length; i++) {
+      tokens.push(`$${i + 1}`);
+    }
+    return tokens;
   }
 
   public PrimaryKey(): Columns {
@@ -27,7 +72,7 @@ class Columns {
         filtered.push(this.All[i]);
       }
     }
-    return new Columns(filtered);
+    return new Columns().AddMany(filtered);
   }
 
   public NotPrimaryKey(): Columns {
@@ -37,7 +82,7 @@ class Columns {
         filtered.push(this.All[i]);
       }
     }
-    return new Columns(filtered);
+    return new Columns().AddMany(filtered);
   }
 
   public Serial(): Columns {
@@ -47,7 +92,7 @@ class Columns {
         filtered.push(this.All[i]);
       }
     }
-    return new Columns(filtered);
+    return new Columns().AddMany(filtered);
   }
 
   public NotSerial(): Columns {
@@ -57,7 +102,7 @@ class Columns {
         filtered.push(this.All[i]);
       }
     }
-    return new Columns(filtered);
+    return new Columns().AddMany(filtered);
   }
 
   public ReadOnly(): Columns {
@@ -67,7 +112,7 @@ class Columns {
         filtered.push(this.All[i]);
       }
     }
-    return new Columns(filtered);
+    return new Columns().AddMany(filtered);
   }
 
   public NotReadOnly(): Columns {
@@ -77,7 +122,7 @@ class Columns {
         filtered.push(this.All[i]);
       }
     }
-    return new Columns(filtered);
+    return new Columns().AddMany(filtered);
   }
 
   // InsertCols returns the columns that will be set during an insert.
