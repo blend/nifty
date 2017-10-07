@@ -1,16 +1,23 @@
+import { Pool, QueryResult } from "pg";
+
 class Invocation {
   Label: string;
-  // Tx??
-  // Conn??
+  Pool: Pool;
 
-  public Exec(statement: string) {}
-  public Query(statement: string): Query {}
+  // Exec runs a given query and returns an error. Maybe.
+  public async Exec(statement: string): Promise<QueryResult> {
+    const res = await this.Pool.query(statement);
+    return res;
+  }
 
-  public Get<T>(id: any) {}
-  public GetAll<T>() {}
-  public Create<T>(obj: T) {}
-  public CreateMany<T>(objs: T[]) {}
-  public Update<T>(obj: T) {}
-  public Upsert<T>(obj: T) {}
-  public Delete<T>(obj: T) {}
+  // Query runs a given query with a given set of arguments, and returns a bound result.
+  public async Query(statement: string) {}
+
+  public async Get<T>(id: any) {}
+  public async GetAll<T>() {}
+  public async Create<T>(obj: T) {}
+  public async CreateMany<T>(objs: T[]) {}
+  public async Update<T>(obj: T) {}
+  public async Upsert<T>(obj: T) {}
+  public async Delete<T>(obj: T) {}
 }

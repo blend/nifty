@@ -1,22 +1,37 @@
-import { Pool, Client } from "pg";
+import { Pool, PoolConfig, Client } from "pg";
 
 // Connection represents the metadata used to make the initial conneciton.
 class Connection {
   Host: string;
-  Port: string;
+  Port: number;
   Database: string;
   Schema: string;
   Username: string;
   Password: string;
   SSLMode: string;
 
+  Client: Client;
   Pool: Pool;
 
   // Open either returns the current pool or creates a new pool.
-  public Open() {}
+  public async Open() {
+    if (!!this.Pool) {
+      return;
+    }
+    await this.OpenNew();
+  }
 
   // OpenNew creates the pool and opens the initial connection.
-  public OpenNew() {}
+  public async OpenNew() {
+    this.Pool = new Pool({
+      host: this.Host,
+      port: this.Port,
+      database: this.Database,
+      user: this.Username,
+      password: this.Password
+    });
+    this.Client = await this.Pool.connect();
+  }
 
   // Prepare creates and returns a postgres query plan for a given statement.
   // You can optionally cache this plan for re-use.
@@ -29,5 +44,9 @@ class Connection {
   public Close() {}
 
   // Run returns a new context.
-  public Run() {}
+  public Invoke(): Invocation {
+    const inv = new Invocation();
+    inv.Pool = this.Pool;
+    return inv;
+  }
 }

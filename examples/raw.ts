@@ -1,18 +1,32 @@
-import { Client } from "pg";
+import { Client, QueryResult } from "pg";
 
-async function main(cb) {
-  const client = new Client();
-
-  await client.connect();
-
-  const res = await client.query("select 'ok!'");
-
-  console.log(res.rows[0]);
-
-  await client.end();
-  cb();
+function ColumnAttr(target: DatabaseMapped, propertyKey: string | symbol) {
+  console.log("prop", target.TableName(), propertyKey);
 }
 
-main(function() {
-  console.log("done");
-});
+interface DatabaseMapped {
+  TableName(): string;
+}
+
+class MetadataTest implements DatabaseMapped {
+  @ColumnAttr public ID: number;
+  @ColumnAttr public Name: string;
+
+  public TableName(): string {
+    return "metadata_test";
+  }
+}
+
+async function query(client: Client, queryBody: string): Promise<QueryResult> {
+  await client.connect();
+  const res = await client.query(queryBody);
+  await client.end();
+  return res;
+}
+
+async function main() {
+  const client = new Client({});
+  const res = await query(client, "select 'ok!' as result");
+  console.log(res.rows[0].result);
+}
+main();
