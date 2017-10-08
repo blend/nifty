@@ -44,6 +44,7 @@ export class Invocation {
         queryBody = queryBody + " AND ";
       }
     }
+
     return ref;
   }
 
