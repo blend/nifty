@@ -3,5 +3,6 @@ export interface Populatable {
 }
 
 export interface DatabaseMapped {
+  new (): any;
   TableName(): string;
 }
