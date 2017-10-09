@@ -45,10 +45,10 @@ export class Connection {
 	}
 
 	// Exec opens a new connection and runs a given statement.
-	public async Query(statement: string, ...args: any[]): Query {
+	public async Query(statement: string, ...args: any[]): Promise<Query> {
 		let inv = await this.Invoke()
 		try {
-			return inv.Exec(statement)
+			return inv.Query(statement, ...args)
 		} finally {
 			inv.Close()
 		}

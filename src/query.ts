@@ -3,12 +3,20 @@ import { Columns } from "./columns";
 import { TableNameFor, ColumnsFor } from "./metacache";
 
 export class Query {
-  Connection: Client;
+  Results: QueryResult;
 
-  public async Out<T>(): Promise<T | Error> {
-    return null;
+  public Out<T>(typeDef: { new(): T; }): T {
+    let ref: T = new typeDef()
+    const className = ref.constructor.name
+    let cols = ColumnsFor(className);
+    let readCols = cols.NotReadOnly(); // these actually exist on the table.
+    for (var col of readCols.All) {
+      col.Set(ref, this.Results.rows[0][col.Name]);
+    }
+    return ref;
   }
-  public async OutMany<T>(): Promise<T[] | Error> {
+
+  public OutMany<T>(): Promise<T[] | Error> {
     return null;
   }
 

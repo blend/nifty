@@ -1,5 +1,6 @@
 import { Client, QueryResult } from "pg";
 import { Columns } from "./columns";
+import { Query } from "./query";
 import { TableNameFor, ColumnsFor } from "./metacache";
 import { Populatable } from "./interfaces";
 
@@ -11,9 +12,9 @@ export class Invocation {
 	Connection: Client;
 
 	// Exec runs a given statement and returns an error. 
-	public async Exec(statement: string): Promise<Error | null> {
+	public async Exec(statement: string, ...args: any[]): Promise<Error | null> {
 		try {
-			await this.Connection.query(statement);
+			await this.Connection.query(statement, ...args);
 		} catch (e) {
 			return e
 		}
@@ -21,7 +22,16 @@ export class Invocation {
 	}
 
 	// Query runs a given query with a given set of arguments, and returns a bound result.
-	public async Query(statement: string, ...args: any[]) { }
+	public async Query(statement: string, ...args: any[]): Promise<Query> {
+		try {
+			let res = await this.Connection.query(statement, ...args);
+			let q = new Query()
+			q.Results = res
+			return q
+		} catch (e) {
+			return e;
+		}
+	}
 
 	public async Begin(): Promise<Error | null> {
 		try {
