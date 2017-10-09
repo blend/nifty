@@ -1,7 +1,7 @@
 import { Client, QueryResult } from "pg";
 import { Columns } from "./columns";
-import { ColumnsFor } from "./metacache";
-import { DatabaseMapped, Populatable } from "./interfaces";
+import { CreateNew, TableNameFor, ColumnsFor } from "./metacache";
+import { Populatable } from "./interfaces";
 
 export interface InvocationConfig {
 	Client: Client;
@@ -60,12 +60,10 @@ export class Invocation {
 		}
 	}
 
-	public async Get<T extends DatabaseMapped>(...ids: any[]): Promise<T | Error> {
+	public async Get(ref: any, ...ids: any[]): Promise<T | Error> {
 		// WCTODO: have a real ctor pattern here / ctor cache.
 		// Makes me long for `Expression.Lambda<Func<T>>(Expression.New(typeof(T))).Compile();`
-		let ref: T = {} as T; // HACK ALERT.
-
-		let tableName = ref.TableName();
+		let tableName = TableNameFor(ref.constructor.name);
 		let cols = ColumnsFor(tableName);
 		let readCols = cols.NotReadOnly(); // these actually exist on the table.
 		let pks = cols.PrimaryKey();
