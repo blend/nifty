@@ -17,8 +17,10 @@ export class Query {
   }
 
   public OutMany<T>(): Promise<T[] | Error> {
-    return null;
+    throw new Error('not implemented');
   }
 
-  public Scan(...values: any[]): Promise<Error | null> { }
+  public Scan(...values: any[]): Promise<Error | null> {
+    throw new Error('not implemented');
+  }
 }
