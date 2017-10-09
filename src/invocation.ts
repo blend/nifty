@@ -50,6 +50,16 @@ export class Invocation {
 		return null;
 	}
 
+	// Close closes the connection.
+	public async Close(): Promise<Error | null> {
+		try {
+			this.Connection.release()
+			return null;
+		} catch (e) {
+			return e
+		}
+	}
+
 	public async Get<T extends DatabaseMapped>(...ids: any[]): Promise<T | Error> {
 		// WCTODO: have a real ctor pattern here / ctor cache.
 		// Makes me long for `Expression.Lambda<Func<T>>(Expression.New(typeof(T))).Compile();`

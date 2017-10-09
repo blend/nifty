@@ -35,24 +35,40 @@ export class Connection {
 	// Exec opens a new connection and runs a given statement.
 	public async Exec(statement: string): Promise<Error | null> {
 		let inv = await this.Invoke()
-		return inv.Exec(statement)
+		try {
+			return inv.Exec(statement)
+		} finally {
+			inv.Close()
+		}
 	}
 
 	// Get opens a new connection and fetches a single instance by id(s).
 	public async Get<T extends DatabaseMapped>(...ids: any[]): Promise<T | Error> {
 		let inv = await this.Invoke()
-		return inv.Get<T>(ids)
+		try {
+			return inv.Get<T>(ids)
+		} finally {
+			inv.Close()
+		}
 	}
 
 	// GetAll opens a new connection and gets all instances of a given model.
 	public async GetAll<T extends DatabaseMapped>(): Promise<Array<T> | Error> {
 		let inv = await this.Invoke()
-		return inv.GetAll<T>()
+		try {
+			return inv.GetAll<T>()
+		} finally {
+			inv.Close()
+		}
 	}
 
 	// Create opens a new connection and inserts the object.
 	public async Create(obj: DatabaseMapped): Promise<Error | null> {
 		let inv = await this.Invoke()
-		return inv.Create(obj)
+		try {
+			return inv.Create(obj)
+		} finally {
+			inv.Close()
+		}
 	}
 }

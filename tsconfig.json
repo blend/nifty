@@ -3,9 +3,7 @@
 		"target": "es6",
 		"module": "commonjs",
 		"lib": [
-			"dom",
 			"es2015",
-			"es2015.collection",
 			"es6"
 		],
 		"strict": true,
