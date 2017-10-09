@@ -26,6 +26,7 @@ export class Connection {
 	}
 
 	// Invoke opens a new connection.
+	// Note; it is the caller's responsibility to close the invocation.
 	public async Invoke(): Promise<Invocation> {
 		const inv = new Invocation();
 		inv.Connection = await this.Pool.connect()
