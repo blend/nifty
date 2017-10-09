@@ -30,9 +30,9 @@ async function main() {
 	md.Name = "foo"
 	await conn.Create(md);
 	console.log("creating object complete");
-	console.log("created", md)
+	console.log("created", md, md.ID)
 
-	let verify = conn.Get<MetadataTest>(MetadataTest, md.ID)
+	let verify = await conn.Get<MetadataTest>(MetadataTest, md.ID)
 	console.log(verify)
 
 	return

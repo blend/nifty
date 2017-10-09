@@ -62,12 +62,18 @@ export class Invocation {
 
 	public async Get<T>(typeDef: { new(): T; }, ...ids: any[]): Promise<T | Error> {
 		let ref: T = new typeDef()
-		let tableName = TableNameFor(typeDef.name);
-		let cols = ColumnsFor(tableName);
+		const className = ref.constructor.name
+		let tableName = TableNameFor(className);
+		let cols = ColumnsFor(className);
 		let readCols = cols.NotReadOnly(); // these actually exist on the table.
 		let pks = cols.PrimaryKey();
+
 		if (pks.Len() == 0) {
 			return new Error("invalid type; no primary keys");
+		}
+
+		if (pks.Len() !== ids.length) {
+			return new Error("insufficient argument value count for type primary keys");
 		}
 
 		let tokens = pks.Tokens();
@@ -80,7 +86,7 @@ export class Invocation {
 		for (var i = 0; i < pks.Len(); i++) {
 			var pk = pks.All[i];
 
-			queryBody = queryBody + pk.Name + " = " + `${i + 1}`;
+			queryBody = queryBody + pk.Name + " = " + `$${i + 1}`;
 
 			if (i < pks.Len() - 1) {
 				queryBody = queryBody + " AND ";
@@ -127,7 +133,6 @@ export class Invocation {
 		}
 
 		try {
-			console.log("create", queryBody)
 			let res = await this.Connection.query(queryBody, colValues);
 			if (serials.Len() > 0) {
 				let serial = serials.First();
@@ -150,8 +155,9 @@ export class Invocation {
 
 	// Delete deletes a given object.
 	public async Delete(obj: any) {
-		const tableName = TableNameFor(obj.constructor.name)
-		const cols = ColumnsFor(obj.constructor.name)
+		const className = obj.constructor.name
+		const tableName = TableNameFor(className)
+		const cols = ColumnsFor(className)
 		const pks = cols.PrimaryKey()
 
 		if (pks.Len() == 0) {

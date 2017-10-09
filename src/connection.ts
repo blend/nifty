@@ -47,7 +47,7 @@ export class Connection {
 	public async Get<T>(typeDef: { new(): T; }, ...ids: any[]): Promise<T | Error> {
 		let inv = await this.Invoke()
 		try {
-			return inv.Get<T>(typeDef, ids)
+			return inv.Get<T>(typeDef, ...ids)
 		} finally {
 			inv.Close()
 		}
