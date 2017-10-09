@@ -1,6 +1,6 @@
-import { Connection } from "./connection";
-import { Column } from "./decorators";
-import { DatabaseMapped } from "./interfaces";
+import { Connection } from "../src/connection";
+import { Column } from "../src/decorators";
+import { DatabaseMapped } from "../src/interfaces";
 
 // MetadataTest is a class the implements database mapped.
 class MetadataTest implements DatabaseMapped {
