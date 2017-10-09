@@ -9,7 +9,9 @@
 		"database",
 		"orm"
 	],
+	"license": "MIT",
 	"homepage": "https://github.com/blendlabs/nifty",
+	"repository": "https://github.com/blendlabs/nifty",
 	"author": "Will Charczuk",
 	"main": "./lib",
 	"dependencies": {

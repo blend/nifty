@@ -1,8 +1,9 @@
+import { QueryResult } from "pg";
+
 export interface Populatable {
-  Populate(): void;
+	Populate(rows: QueryResult): Error;
 }
 
 export interface DatabaseMapped {
-  new (): any;
-  TableName(): string;
+	TableName(): string;
 }
