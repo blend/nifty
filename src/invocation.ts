@@ -146,12 +146,13 @@ export class Invocation {
 	}
 
 	// CreateMany inserts multiple objects at once.
-	public async CreateMany<T>(objs: T[]) { }
+	public async CreateMany(...objs: any[]): Promise<Error | null> { return null }
 
-	public async Update<T>(obj: T) { }
+	// Update updates an object by primary key; it does not re-assign the pk value(s).
+	public async Update<T>(obj: T): Promise<Error | null> { return null }
 
 	// Upsert creates an object if it doesn't exit, otherwise it updates it.
-	public async Upsert<T>(obj: T) { }
+	public async Upsert<T>(obj: T): Promise<Error | null> { return null }
 
 	// Delete deletes a given object.
 	public async Delete(obj: any) {
@@ -191,8 +192,10 @@ export class Invocation {
 	// Truncate deletes *all* rows of a table using the truncate command.
 	// If the type implements a `serial` column it will restart the identity.
 	public async Truncate<T>(typeDef: { new(): T; }): Promise<Error | null> {
-		const tableName = TableNameFor(typeDef.name)
-		const cols = ColumnsFor(typeDef.name)
+		let ref: T = new typeDef()
+		const className = ref.constructor.name
+		const tableName = TableNameFor(className)
+		const cols = ColumnsFor(className)
 		const serials = cols.Serial()
 
 		let queryBody = `TRUNCATE ${tableName}`

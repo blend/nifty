@@ -1,5 +1,6 @@
 import { Pool, PoolConfig, Client, QueryResult } from "pg";
 import { Invocation } from "./invocation";
+import { Query } from "./query";
 import { Populatable } from "./interfaces";
 
 // Connection represents the metadata used to make the initial conneciton.
@@ -43,7 +44,18 @@ export class Connection {
 		}
 	}
 
+	// Exec opens a new connection and runs a given statement.
+	public async Query(statement: string, ...args: any[]): Query {
+		let inv = await this.Invoke()
+		try {
+			return inv.Exec(statement)
+		} finally {
+			inv.Close()
+		}
+	}
+
 	// Get opens a new connection and fetches a single instance by id(s).
+	// note: the `typeDef` is required because we can't infer the <T> ctor at runtime.
 	public async Get<T>(typeDef: { new(): T; }, ...ids: any[]): Promise<T | Error> {
 		let inv = await this.Invoke()
 		try {
@@ -54,6 +66,7 @@ export class Connection {
 	}
 
 	// GetAll opens a new connection and gets all instances of a given model.
+	// note: the `typeDef` is required because we can't infer the <T> ctor at runtime.
 	public async GetAll<T>(typeDef: { new(): T; }): Promise<Array<T> | Error> {
 		let inv = await this.Invoke()
 		try {
@@ -68,6 +81,47 @@ export class Connection {
 		let inv = await this.Invoke()
 		try {
 			return inv.Create(obj)
+		} finally {
+			inv.Close()
+		}
+	}
+
+	// Create opens a new connection and inserts the object.
+	public async CreateMany(...objs: any[]): Promise<Error | null> {
+		let inv = await this.Invoke()
+		try {
+			return inv.CreateMany(...objs)
+		} finally {
+			inv.Close()
+		}
+	}
+
+	// Update opens a new connection and updates the object.
+	public async Update(obj: any): Promise<Error | null> {
+		let inv = await this.Invoke()
+		try {
+			return inv.Update(obj)
+		} finally {
+			inv.Close()
+		}
+	}
+
+	// Delete opens a new connection and deletes a given object.
+	public async Delete(obj: any): Promise<Error | null> {
+		let inv = await this.Invoke()
+		try {
+			return inv.Delete(obj)
+		} finally {
+			inv.Close()
+		}
+	}
+
+	// Truncate opens a new connection and truncates a table represented by a type.
+	// note: the `typeDef` is required because we can't infer the <T> ctor at runtime.
+	public async Truncate<T>(typeDef: { new(): T; }): Promise<Error | null> {
+		let inv = await this.Invoke()
+		try {
+			return inv.Truncate<T>(typeDef)
 		} finally {
 			inv.Close()
 		}
