@@ -38,7 +38,7 @@ export function Column(name?: string, opts?: ColumnOptions) {
 
 export function Table(name?: string) {
 	return function (target: any) {
-		let tableName = name || target.constructor.name
-		AddModel(tableName, target.cosntructor.name, target.constructor)
+		let tableName = name || target.name
+		AddModel(tableName, target.name)
 	}
 }

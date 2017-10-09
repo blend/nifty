@@ -1,19 +1,14 @@
 import { Connection } from "../src/connection";
-import { Column } from "../src/decorators";
-import { DatabaseMapped } from "../src/interfaces";
+import { Table, Column } from "../src/decorators";
 
 // MetadataTest is a class the implements database mapped.
-class MetadataTest implements DatabaseMapped {
-
+@Table("metadata_test")
+class MetadataTest {
 	@Column("id", { PrimaryKey: true, Serial: true })
 	ID: number;
 
 	@Column("name")
 	Name: string;
-
-	public TableName(): string {
-		return "metadata_test";
-	}
 }
 
 async function migrate(conn: Connection) {
@@ -35,9 +30,9 @@ async function main() {
 	md.Name = "foo"
 	await conn.Create(md);
 	console.log("creating object complete");
-	console.log(md)
+	console.log("created", md)
 
-	let verify = conn.Get<MetadataTest>(md.ID)
+	let verify = conn.Get<MetadataTest>(MetadataTest, md.ID)
 	console.log(verify)
 
 	return

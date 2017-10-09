@@ -1,20 +1,16 @@
 import { ColumnInfo } from "./column_info";
-import { DatabaseMapped } from "./interfaces";
 
 export class Columns {
 	public All: Array<ColumnInfo>;
 	public Lookup: Map<string, ColumnInfo>;
 
-	constructor() { }
+	constructor() {
+		this.All = new Array<ColumnInfo>();
+		this.Lookup = new Map<string, ColumnInfo>();
+	}
 
 	// Add adds a column to the collection.
 	public Add(col: ColumnInfo): Columns {
-		if (!this.All) {
-			this.All = new Array<ColumnInfo>()
-		}
-		if (!this.Lookup) {
-			this.Lookup = new Map<string, ColumnInfo>()
-		}
 		this.All.push(col);
 		this.Lookup.set(col.Name, col);
 		return this;
@@ -22,12 +18,6 @@ export class Columns {
 
 	// AddMany adds an array of columns to the collection.
 	public AddMany(cols: Array<ColumnInfo>): Columns {
-		if (!this.All) {
-			this.All = new Array<ColumnInfo>()
-		}
-		if (!this.Lookup) {
-			this.Lookup = new Map<string, ColumnInfo>()
-		}
 		this.All = cols;
 		for (var i = 0; i < cols.length; i++) {
 			this.Lookup.set(cols[i].Name, cols[i]);
@@ -45,7 +35,10 @@ export class Columns {
 
 	// Len returns the number of columns.
 	public Len(): number {
-		return this.All.length;
+		if (!!this.All) {
+			return this.All.length;
+		}
+		return 0
 	}
 
 	public ColumnNames(): Array<string> {
@@ -57,7 +50,7 @@ export class Columns {
 	}
 
 	// ColumnValues returns the value for each column on a given object.
-	public ColumnValues(instance: DatabaseMapped): Array<any> {
+	public ColumnValues(instance: any): Array<any> {
 		let values = new Array<any>();
 		for (var col of this.All) {
 			values.push(col.Get(instance));

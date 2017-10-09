@@ -1,6 +1,6 @@
 import { Pool, PoolConfig, Client, QueryResult } from "pg";
 import { Invocation } from "./invocation";
-import { DatabaseMapped, Populatable } from "./interfaces";
+import { Populatable } from "./interfaces";
 
 // Connection represents the metadata used to make the initial conneciton.
 export class Connection {
@@ -44,27 +44,27 @@ export class Connection {
 	}
 
 	// Get opens a new connection and fetches a single instance by id(s).
-	public async Get<T extends DatabaseMapped>(...ids: any[]): Promise<T | Error> {
+	public async Get<T>(typeDef: { new(): T; }, ...ids: any[]): Promise<T | Error> {
 		let inv = await this.Invoke()
 		try {
-			return inv.Get<T>(ids)
+			return inv.Get<T>(typeDef, ids)
 		} finally {
 			inv.Close()
 		}
 	}
 
 	// GetAll opens a new connection and gets all instances of a given model.
-	public async GetAll<T extends DatabaseMapped>(): Promise<Array<T> | Error> {
+	public async GetAll<T>(typeDef: { new(): T; }): Promise<Array<T> | Error> {
 		let inv = await this.Invoke()
 		try {
-			return inv.GetAll<T>()
+			return inv.GetAll<T>(typeDef)
 		} finally {
 			inv.Close()
 		}
 	}
 
 	// Create opens a new connection and inserts the object.
-	public async Create(obj: DatabaseMapped): Promise<Error | null> {
+	public async Create(obj: any): Promise<Error | null> {
 		let inv = await this.Invoke()
 		try {
 			return inv.Create(obj)

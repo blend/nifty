@@ -1,16 +1,13 @@
 import { Columns } from "./columns";
 import { ColumnInfo } from "./column_info";
 
-const __ctorcache = new Map<string, () => any>()
 const __tablenames = new Map<string, string>()
 const __metacache = new Map<string, Columns>()
 
-export function AddModel(tableName: string, className: string, ctor: () => any) {
+export function AddModel(tableName: string, className: string) {
 	if (!__tablenames.has(className)) {
+		console.log('registering model', className, tableName)
 		__tablenames.set(className, tableName)
-	}
-	if (!__ctorcache.has(className)) {
-		__ctorcache.set(className, ctor);
 	}
 }
 
@@ -32,14 +29,6 @@ export function TableNameFor(className: string): string {
 		return cachedName
 	}
 	return className
-}
-
-export function CreateNew(className: string): any {
-	let ctor = __ctorcache.get(className)
-	if (!!ctor) {
-		return ctor()
-	}
-	return null
 }
 
 export function ColumnsFor(tableName: string): Columns {

@@ -1,6 +1,6 @@
 import { Client, QueryResult } from "pg";
 import { Columns } from "./columns";
-import { CreateNew, TableNameFor, ColumnsFor } from "./metacache";
+import { TableNameFor, ColumnsFor } from "./metacache";
 import { Populatable } from "./interfaces";
 
 export interface InvocationConfig {
@@ -60,11 +60,9 @@ export class Invocation {
 		}
 	}
 
-	public async Get<T>(...ids: any[]): Promise<T | Error> {
-		// WCTODO: have a real ctor pattern here / ctor cache.
-		// Makes me long for `Expression.Lambda<Func<T>>(Expression.New(typeof(T))).Compile();`
-		let ref: T = <T>{};
-		let tableName = TableNameFor(ref.constructor.name);
+	public async Get<T>(typeDef: { new(): T; }, ...ids: any[]): Promise<T | Error> {
+		let ref: T = new typeDef()
+		let tableName = TableNameFor(typeDef.name);
 		let cols = ColumnsFor(tableName);
 		let readCols = cols.NotReadOnly(); // these actually exist on the table.
 		let pks = cols.PrimaryKey();
@@ -102,7 +100,7 @@ export class Invocation {
 	}
 
 	// GetAll returns all instances of T in it's respective table as an array.
-	public async GetAll<T>(): Promise<Array<T> | Error> {
+	public async GetAll<T>(typeDef: { new(): T; }): Promise<Array<T> | Error> {
 		// build query
 		// execute query
 		// loop over results, bind each to a new object, add to the array.
@@ -112,7 +110,7 @@ export class Invocation {
 
 	// Create inserts the object into the db.
 	public async Create(obj: any): Promise<Error | null> {
-		const tableName = obj.TableName();
+		const tableName = TableNameFor(obj.constructor.name);
 		const cols = ColumnsFor(tableName);
 		const writeCols = cols.NotReadOnly().NotSerial();
 		const serials = cols.Serial();
@@ -180,9 +178,8 @@ export class Invocation {
 
 	// Truncate deletes *all* rows of a table using the truncate command.
 	// If the type implements a `serial` column it will restart the identity.
-	public async Truncate<T>(): Promise<Error | null> {
-		let ref: T = {} as T; // HACK ALERT.
-		const tableName = TableNameFor(ref.constructor.name)
+	public async Truncate<T>(typeDef: { new(): T; }): Promise<Error | null> {
+		const tableName = TableNameFor(typeDef.name)
 		const cols = ColumnsFor(tableName)
 		const serials = cols.Serial()
 
