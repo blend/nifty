@@ -1,4 +1,3 @@
-import { DatabaseMapped } from "./interfaces";
 import { Columns } from "./columns";
 import { ColumnInfo } from "./column_info";
 
@@ -15,8 +14,8 @@ export function AddModel(tableName: string, className: string, ctor: () => any) 
 	}
 }
 
-export function AddModelColumn(target: DatabaseMapped, column: ColumnInfo) {
-	const tableName = target.TableName();
+export function AddModelColumn(target: any, column: ColumnInfo) {
+	const tableName = TableNameFor(target.constructor.name);
 	if (!__metacache.has(tableName)) {
 		__metacache.set(tableName, new Columns().Add(column));
 	}
@@ -27,16 +26,20 @@ export function AddModelColumn(target: DatabaseMapped, column: ColumnInfo) {
 	}
 }
 
-export function TableNameFor(className: string): string | undefined {
-	return __tablenames.get(className)
+export function TableNameFor(className: string): string {
+	let cachedName = __tablenames.get(className)
+	if (!!cachedName) {
+		return cachedName
+	}
+	return className
 }
 
-export function CreateNew(className: string): any | undefined {
+export function CreateNew(className: string): any {
 	let ctor = __ctorcache.get(className)
 	if (!!ctor) {
 		return ctor()
 	}
-	return
+	return null
 }
 
 export function ColumnsFor(tableName: string): Columns {

@@ -60,9 +60,10 @@ export class Invocation {
 		}
 	}
 
-	public async Get(ref: any, ...ids: any[]): Promise<T | Error> {
+	public async Get<T>(...ids: any[]): Promise<T | Error> {
 		// WCTODO: have a real ctor pattern here / ctor cache.
 		// Makes me long for `Expression.Lambda<Func<T>>(Expression.New(typeof(T))).Compile();`
+		let ref: T = <T>{};
 		let tableName = TableNameFor(ref.constructor.name);
 		let cols = ColumnsFor(tableName);
 		let readCols = cols.NotReadOnly(); // these actually exist on the table.
@@ -110,7 +111,7 @@ export class Invocation {
 	}
 
 	// Create inserts the object into the db.
-	public async Create(obj: DatabaseMapped): Promise<Error | null> {
+	public async Create(obj: any): Promise<Error | null> {
 		const tableName = obj.TableName();
 		const cols = ColumnsFor(tableName);
 		const writeCols = cols.NotReadOnly().NotSerial();
@@ -144,8 +145,8 @@ export class Invocation {
 	public async Upsert<T>(obj: T) { }
 
 	// Delete deletes a given object.
-	public async Delete(obj: DatabaseMapped) {
-		const tableName = obj.TableName()
+	public async Delete(obj: any) {
+		const tableName = TableNameFor(obj.constructor.name)
 		const cols = ColumnsFor(tableName)
 		const pks = cols.PrimaryKey()
 
@@ -179,9 +180,9 @@ export class Invocation {
 
 	// Truncate deletes *all* rows of a table using the truncate command.
 	// If the type implements a `serial` column it will restart the identity.
-	public async Truncate<T extends DatabaseMapped>(): Promise<Error | null> {
+	public async Truncate<T>(): Promise<Error | null> {
 		let ref: T = {} as T; // HACK ALERT.
-		const tableName = ref.TableName()
+		const tableName = TableNameFor(ref.constructor.name)
 		const cols = ColumnsFor(tableName)
 		const serials = cols.Serial()
 

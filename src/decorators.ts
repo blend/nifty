@@ -1,4 +1,3 @@
-import { DatabaseMapped } from "./interfaces";
 import { AddModel, AddModelColumn } from "./metacache";
 import { ColumnInfo } from "./column_info";
 
@@ -10,7 +9,7 @@ export interface ColumnOptions {
 
 // Column defines the mapping relationship between the type field and a column on a table in the database.
 export function Column(name?: string, opts?: ColumnOptions) {
-	return function (target: DatabaseMapped, key: string) {
+	return function (target: any, key: string) {
 		let column = new ColumnInfo();
 
 		if (!!name) {
@@ -40,6 +39,6 @@ export function Column(name?: string, opts?: ColumnOptions) {
 export function Table(name?: string) {
 	return function (target: any) {
 		let tableName = name || target.constructor.name
-		AddModel(tableName, target.constructor)
+		AddModel(tableName, target.cosntructor.name, target.constructor)
 	}
 }
