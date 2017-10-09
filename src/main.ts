@@ -1,9 +1,14 @@
 import { Connection } from "./connection";
+import { Column } from "./decorators";
 import { DatabaseMapped } from "./interfaces";
 
 // MetadataTest is a class the implements database mapped.
 class MetadataTest implements DatabaseMapped {
+
+	@Column("id", { PrimaryKey: true, Serial: true })
 	ID: number;
+
+	@Column("name")
 	Name: string;
 
 	public TableName(): string {
@@ -13,9 +18,8 @@ class MetadataTest implements DatabaseMapped {
 
 async function migrate(conn: Connection) {
 	console.log("creating metadata table");
-	let cmd = await conn.Invoke()
-	let result = await cmd.Exec(
-		"CREATE TABLE IF NOT EXISTS metadata_test (id serial, name varchar(255))"
+	let result = await conn.Exec(
+		"CREATE TABLE IF NOT EXISTS metadata_test (id serial not null, name varchar(255))"
 	);
 
 }
@@ -26,6 +30,6 @@ async function main() {
 	await migrate(conn);
 
 	let md = new MetadataTest();
-	await conn.Invoke().Create(md);
+	await conn.Create(md);
 }
 main();
