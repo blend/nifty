@@ -13,9 +13,11 @@
 	"homepage": "https://github.com/blendlabs/nifty",
 	"scripts": {
     "build": "tsc -p .",
+    "buildClean": "npm run clean && npm run build",
+    "clean": "rm -rf ./dist",
 		"docker-reset": "chmod a+rx ./docker/test.sh && ./docker/test.sh",
 		"docker-stop": "docker rm -f test-postgres",
-		"test": "NODE_ENV=test && npm run docker-reset && nyc --check-coverage -a ava && npm run docker-stop"
+    "test": "NODE_ENV=test && npm run docker-reset && nyc --check-coverage -a ava && npm run docker-stop"
 	},
 	"repository": "https://github.com/blendlabs/nifty",
 	"author": "Will Charczuk",
