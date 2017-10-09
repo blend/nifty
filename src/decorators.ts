@@ -1,5 +1,5 @@
 import { DatabaseMapped } from "./interfaces";
-import { AddModelColumn } from "./metacache";
+import { AddModel, AddModelColumn } from "./metacache";
 import { ColumnInfo } from "./column_info";
 
 export interface ColumnOptions {
@@ -34,5 +34,12 @@ export function Column(name?: string, opts?: ColumnOptions) {
 		};
 
 		AddModelColumn(target, column);
+	}
+}
+
+export function Table(name?: string) {
+	return function (target: any) {
+		let tableName = name || target.constructor.name
+		AddModel(tableName, target.constructor)
 	}
 }
