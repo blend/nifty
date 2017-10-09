@@ -27,7 +27,7 @@ export class Columns {
 
 	// First returns the first column in the collection.
 	public First(): ColumnInfo {
-		if (this.All.length == 0) {
+		if (this.All.length === 0) {
 			return new ColumnInfo();
 		}
 		return this.All[0];
@@ -35,10 +35,7 @@ export class Columns {
 
 	// Len returns the number of columns.
 	public Len(): number {
-		if (!!this.All) {
-			return this.All.length;
-		}
-		return 0
+		return this.All.length;
 	}
 
 	public ColumnNames(): Array<string> {

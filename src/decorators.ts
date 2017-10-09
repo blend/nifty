@@ -32,13 +32,13 @@ export function Column(name?: string, opts?: ColumnOptions) {
 			instance[key] = value;
 		};
 
-		AddModelColumn(target, column);
+		AddModelColumn(target.constructor.name, column);
 	}
 }
 
 export function Table(name?: string) {
 	return function (target: any) {
 		let tableName = name || target.name
-		AddModel(tableName, target.name)
+		AddModel(target.name, tableName)
 	}
 }

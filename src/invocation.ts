@@ -110,10 +110,11 @@ export class Invocation {
 
 	// Create inserts the object into the db.
 	public async Create(obj: any): Promise<Error | null> {
-		const tableName = TableNameFor(obj.constructor.name);
-		const cols = ColumnsFor(tableName);
-		const writeCols = cols.NotReadOnly().NotSerial();
-		const serials = cols.Serial();
+		const className = obj.constructor.name
+		const tableName = TableNameFor(className)
+		const cols = ColumnsFor(className)
+		const writeCols = cols.NotReadOnly().NotSerial()
+		const serials = cols.Serial()
 
 		const colNames = writeCols.ColumnNames().join(",");
 		const colValues = writeCols.ColumnValues(obj);
@@ -125,10 +126,15 @@ export class Invocation {
 			queryBody = queryBody + ` RETURNING ${serials.First().Name}`;
 		}
 
-		let res = await this.Connection.query(queryBody, colValues);
-		if (serials.Len() > 0) {
-			let serial = serials.First();
-			serial.Set(obj, res.rows[0][serial.Name]);
+		try {
+			console.log("create", queryBody)
+			let res = await this.Connection.query(queryBody, colValues);
+			if (serials.Len() > 0) {
+				let serial = serials.First();
+				serial.Set(obj, res.rows[0][serial.Name]);
+			}
+		} catch (e) {
+			return e
 		}
 
 		return null;
@@ -145,7 +151,7 @@ export class Invocation {
 	// Delete deletes a given object.
 	public async Delete(obj: any) {
 		const tableName = TableNameFor(obj.constructor.name)
-		const cols = ColumnsFor(tableName)
+		const cols = ColumnsFor(obj.constructor.name)
 		const pks = cols.PrimaryKey()
 
 		if (pks.Len() == 0) {
@@ -180,7 +186,7 @@ export class Invocation {
 	// If the type implements a `serial` column it will restart the identity.
 	public async Truncate<T>(typeDef: { new(): T; }): Promise<Error | null> {
 		const tableName = TableNameFor(typeDef.name)
-		const cols = ColumnsFor(tableName)
+		const cols = ColumnsFor(typeDef.name)
 		const serials = cols.Serial()
 
 		let queryBody = `TRUNCATE ${tableName}`
