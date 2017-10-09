@@ -11,6 +11,12 @@
 	],
 	"license": "MIT",
 	"homepage": "https://github.com/blendlabs/nifty",
+	"scripts": {
+    "build": "tsc -p .",
+		"docker-reset": "chmod a+rx ./docker/test.sh && ./docker/test.sh",
+		"docker-stop": "docker rm -f test-postgres",
+		"test": "NODE_ENV=test && npm run docker-reset && nyc --check-coverage -a ava && npm run docker-stop"
+	},
 	"repository": "https://github.com/blendlabs/nifty",
 	"author": "Will Charczuk",
 	"main": "./lib",
@@ -20,6 +26,8 @@
 	},
 	"devDependencies": {
 		"@types/pg": "^7.1.4",
+		"ava": "^0.22.0",
+		"nyc": "^11.2.1",
 		"typescript": "^2.5.3"
 	}
 }
