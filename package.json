@@ -17,7 +17,7 @@
     "clean": "rm -rf ./dist",
 		"docker-reset": "chmod a+rx ./docker/test.sh && ./docker/test.sh",
 		"docker-stop": "docker rm -f test-postgres",
-    "test": "NODE_ENV=test && npm run docker-reset && nyc --check-coverage -a ava && npm run docker-stop"
+    "test": "npm run docker-reset && npm run buildClean && NODE_ENV=test nyc --check-coverage -a ava && npm run docker-stop"
 	},
 	"repository": "https://github.com/blendlabs/nifty",
 	"author": "Will Charczuk",
@@ -31,5 +31,31 @@
 		"ava": "^0.22.0",
 		"nyc": "^11.2.1",
 		"typescript": "^2.5.3"
-	}
+  },
+  "ava": {
+    "files": [
+      "dist/test/**/*.js"
+    ],
+    "source": [
+      "dist/src/**/*.js"
+    ],
+    "failWithoutAssertions": false
+  },
+  "nyc": {
+    "include": [
+      "dist/src/**/*.js"
+    ],
+    "exclude": [
+      "*.d.ts",
+      "dist/test/**/*.js.map"
+    ],
+    "statements": 0,
+    "lines": 0,
+    "functions": 0,
+    "branches": 0,
+    "reporter": [
+      "html",
+      "text"
+    ]
+  }
 }
