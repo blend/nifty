@@ -1,4 +1,4 @@
-import { ColumnInfo } from "./column_info";
+import { ColumnInfo } from './column_info';
 
 export class Columns {
 	public All: Array<ColumnInfo>;

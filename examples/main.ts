@@ -1,41 +1,39 @@
-import { Connection } from "../src/connection";
-import { Table, Column } from "../src/decorators";
+import { Connection } from '../src/connection';
+import { Table, Column } from '../src/decorators';
 
 // MetadataTest is a class the implements database mapped.
-@Table("metadata_test")
+@Table('metadata_test')
 class MetadataTest {
-	@Column("id", { PrimaryKey: true, Serial: true })
+	@Column('id', { PrimaryKey: true, Serial: true })
 	ID: number;
 
-	@Column("name")
+	@Column('name')
 	Name: string;
 }
 
 async function migrate(conn: Connection) {
-	console.log("creating metadata table");
+	console.log('creating metadata table');
 	let result = await conn.exec(
 		'CREATE TABLE IF NOT EXISTS metadata_test (id serial not null, name varchar(255))'
 	);
-	console.log("creating metadata table complete");
+	console.log('creating metadata table complete');
 
 }
 
 async function main() {
 	const conn = new Connection();
-	await conn.open();
+	conn.open();
 	await migrate(conn);
 
-	console.log("creating object");
+	console.log('creating object');
 	let md = new MetadataTest();
-	md.Name = "foo"
+	md.Name = 'foo';
 	await conn.create(md);
-	console.log("creating object complete");
-	console.log("created", md, md.ID)
+	console.log('creating object complete');
+	console.log('created', md, md.ID);
 
 	// this seems anus tier but is necessary because typescript is not a real language.
-	let verify = await conn.get<MetadataTest>(MetadataTest, md.ID)
-	console.log(verify)
-
-	return
+	let verify = await conn.get<MetadataTest>(MetadataTest, md.ID);
+	console.log(verify);
 }
 main();

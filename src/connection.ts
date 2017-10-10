@@ -1,7 +1,7 @@
-import { Pool, PoolConfig, Client, QueryResult } from "pg";
-import { Invocation } from "./invocation";
-import { Query } from "./query";
-import { Populatable } from "./interfaces";
+import { Pool, PoolConfig, Client, QueryResult } from 'pg';
+import { Invocation } from './invocation';
+import { Query } from './query';
+import { Populatable } from './interfaces';
 
 // Connection represents the metadata used to make the initial conneciton.
 export class Connection {

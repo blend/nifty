@@ -1,6 +1,6 @@
-import { Pool } from "pg";
-import { Invocation } from "./invocation";
-import { Query } from "./query";
+import { Pool } from 'pg';
+import { Invocation } from './invocation';
+import { Query } from './query';
 export declare class Connection {
     host: string;
     port: number;
