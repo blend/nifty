@@ -1,5 +1,5 @@
-import { Client } from "pg";
-import { Query } from "./query";
+import { Client } from 'pg';
+import { Query } from './query';
 export interface InvocationConfig {
     client: Client;
 }

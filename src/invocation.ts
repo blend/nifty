@@ -1,8 +1,8 @@
-import { Client, QueryResult } from "pg";
-import { Columns } from "./columns";
-import { Query } from "./query";
-import { TableNameFor, ColumnsFor } from "./metacache";
-import { Populatable } from "./interfaces";
+import { Client, QueryResult } from 'pg';
+import { Columns } from './columns';
+import { Query } from './query';
+import { TableNameFor, ColumnsFor } from './metacache';
+import { Populatable } from './interfaces';
 
 export interface InvocationConfig {
 	client: Client;
@@ -35,7 +35,7 @@ export class Invocation {
 
 	public async begin(): Promise<Error | null> {
 		try {
-			await this.connection.query("BEGIN");
+			await this.connection.query('BEGIN');
 		} catch (e) {
 			return e;
 		}
@@ -44,7 +44,7 @@ export class Invocation {
 
 	public async commit(): Promise<Error | null> {
 		try {
-			await this.connection.query("COMMIT");
+			await this.connection.query('COMMIT');
 		} catch (e) {
 			return e;
 		}
@@ -53,7 +53,7 @@ export class Invocation {
 
 	public async rollback(): Promise<Error | null> {
 		try {
-			await this.connection.query("ROLLBACK");
+			await this.connection.query('ROLLBACK');
 		} catch (e) {
 			return e;
 		}
@@ -79,16 +79,16 @@ export class Invocation {
 		let pks = cols.PrimaryKey();
 
 		if (pks.Len() == 0) {
-			return new Error("invalid type; no primary keys");
+			return new Error('invalid type; no primary keys');
 		}
 
 		if (pks.Len() !== ids.length) {
-			return new Error("insufficient argument value count for type primary keys");
+			return new Error('insufficient argument value count for type primary keys');
 		}
 
 		let tokens = pks.Tokens();
 
-		let columnNames = readCols.ColumnNames().join(",");
+		let columnNames = readCols.ColumnNames().join(',');
 
 		let queryBody = `SELECT ${columnNames} FROM ${tableName} WHERE `;
 
@@ -96,10 +96,10 @@ export class Invocation {
 		for (var i = 0; i < pks.Len(); i++) {
 			var pk = pks.All[i];
 
-			queryBody = queryBody + pk.Name + " = " + `$${i + 1}`;
+			queryBody = queryBody + pk.Name + ' = ' + `$${i + 1}`;
 
 			if (i < pks.Len() - 1) {
-				queryBody = queryBody + " AND ";
+				queryBody = queryBody + ' AND ';
 			}
 		}
 
@@ -132,9 +132,9 @@ export class Invocation {
 		const writeCols = cols.NotReadOnly().NotSerial()
 		const serials = cols.Serial()
 
-		const colNames = writeCols.ColumnNames().join(",");
+		const colNames = writeCols.ColumnNames().join(',');
 		const colValues = writeCols.ColumnValues(obj);
-		const tokens = writeCols.Tokens().join(",");
+		const tokens = writeCols.Tokens().join(',');
 
 		let queryBody = `INSERT INTO ${tableName} (${colNames}) VALUES (${tokens})`;
 
@@ -172,7 +172,7 @@ export class Invocation {
 		const pks = cols.PrimaryKey()
 
 		if (pks.Len() == 0) {
-			return new Error("invalid type; no primary keys");
+			return new Error('invalid type; no primary keys');
 		}
 
 		let ids = new Array<any>()
@@ -181,10 +181,10 @@ export class Invocation {
 		for (var i = 0; i < pks.Len(); i++) {
 			var pk = pks.All[i];
 
-			queryBody = queryBody + pk.Name + " = " + `${i + 1}`;
+			queryBody = queryBody + pk.Name + ' = ' + `${i + 1}`;
 
 			if (i < pks.Len() - 1) {
-				queryBody = queryBody + " AND ";
+				queryBody = queryBody + ' AND ';
 			}
 
 			ids.push(pk.Get(obj))
@@ -211,7 +211,7 @@ export class Invocation {
 		let queryBody = `TRUNCATE ${tableName}`
 
 		if (serials.Len() > 0) {
-			queryBody = queryBody + " RESTART IDENTITY"
+			queryBody = queryBody + ' RESTART IDENTITY'
 		}
 
 		try {

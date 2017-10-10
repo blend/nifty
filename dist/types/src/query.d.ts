@@ -1,4 +1,4 @@
-import { QueryResult } from "pg";
+import { QueryResult } from 'pg';
 export declare class Query {
     Results: QueryResult;
     Out<T>(typeDef: {

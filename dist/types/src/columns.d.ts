@@ -1,4 +1,4 @@
-import { ColumnInfo } from "./column_info";
+import { ColumnInfo } from './column_info';
 export declare class Columns {
     All: Array<ColumnInfo>;
     Lookup: Map<string, ColumnInfo>;

@@ -1,6 +1,6 @@
-import { Client, QueryResult } from "pg";
-import { Columns } from "./columns";
-import { TableNameFor, ColumnsFor } from "./metacache";
+import { Client, QueryResult } from 'pg';
+import { Columns } from './columns';
+import { TableNameFor, ColumnsFor } from './metacache';
 
 export class Query {
   Results: QueryResult;

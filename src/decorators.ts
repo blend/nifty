@@ -1,5 +1,5 @@
-import { AddModel, AddModelColumn } from "./metacache";
-import { ColumnInfo } from "./column_info";
+import { AddModel, AddModelColumn } from './metacache';
+import { ColumnInfo } from './column_info';
 
 export interface ColumnOptions {
 	PrimaryKey?: boolean

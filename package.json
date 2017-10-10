@@ -34,12 +34,13 @@
   },
   "ava": {
     "files": [
-      "dist/test/**/*.js"
+      "**/*.test.js"
     ],
     "source": [
       "dist/src/**/*.js"
     ],
-    "failWithoutAssertions": false
+    "failWithoutAssertions": true,
+    "babel": "inherit"
   },
   "nyc": {
     "include": [
@@ -47,7 +48,7 @@
     ],
     "exclude": [
       "*.d.ts",
-      "dist/test/**/*.js.map"
+      "*.js.map"
     ],
     "statements": 0,
     "lines": 0,

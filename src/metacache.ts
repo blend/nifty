@@ -1,5 +1,5 @@
-import { Columns } from "./columns";
-import { ColumnInfo } from "./column_info";
+import { Columns } from './columns';
+import { ColumnInfo } from './column_info';
 
 const __tablenames = new Map<string, string>()
 const __metacache = new Map<string, Columns>()
