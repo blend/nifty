@@ -20,7 +20,8 @@
 	},
 	"include": [
 		"./examples/*.ts",
-		"./src/*.ts"
+    "./src/*.ts",
+    "./test/*.test.ts"
 	],
 	"exclude": [
 		"node_modules"

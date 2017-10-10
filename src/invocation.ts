@@ -5,16 +5,16 @@ import { TableNameFor, ColumnsFor } from "./metacache";
 import { Populatable } from "./interfaces";
 
 export interface InvocationConfig {
-	Client: Client;
+	client: Client;
 }
 
 export class Invocation {
-	Connection: Client;
+	connection: Client;
 
-	// Exec runs a given statement and returns an error. 
-	public async Exec(statement: string, ...args: any[]): Promise<Error | null> {
+	// Exec runs a given statement and returns an error.
+	public async exec(statement: string, ...args: any[]): Promise<Error | null> {
 		try {
-			await this.Connection.query(statement, ...args);
+			await this.connection.query(statement, ...args);
 		} catch (e) {
 			return e
 		}
@@ -22,9 +22,9 @@ export class Invocation {
 	}
 
 	// Query runs a given query with a given set of arguments, and returns a bound result.
-	public async Query(statement: string, ...args: any[]): Promise<Query> {
+	public async query(statement: string, ...args: any[]): Promise<Query> {
 		try {
-			let res = await this.Connection.query(statement, ...args);
+			let res = await this.connection.query(statement, ...args);
 			let q = new Query()
 			q.Results = res
 			return q
@@ -33,27 +33,27 @@ export class Invocation {
 		}
 	}
 
-	public async Begin(): Promise<Error | null> {
+	public async begin(): Promise<Error | null> {
 		try {
-			await this.Connection.query("BEGIN");
+			await this.connection.query("BEGIN");
 		} catch (e) {
 			return e;
 		}
 		return null;
 	}
 
-	public async Commit(): Promise<Error | null> {
+	public async commit(): Promise<Error | null> {
 		try {
-			await this.Connection.query("COMMIT");
+			await this.connection.query("COMMIT");
 		} catch (e) {
 			return e;
 		}
 		return null;
 	}
 
-	public async Rollback(): Promise<Error | null> {
+	public async rollback(): Promise<Error | null> {
 		try {
-			await this.Connection.query("ROLLBACK");
+			await this.connection.query("ROLLBACK");
 		} catch (e) {
 			return e;
 		}
@@ -61,16 +61,16 @@ export class Invocation {
 	}
 
 	// Close closes the connection.
-	public async Close(): Promise<Error | null> {
+	public async close(): Promise<Error | null> {
 		try {
-			this.Connection.release()
+			this.connection.release()
 			return null;
 		} catch (e) {
 			return e
 		}
 	}
 
-	public async Get<T>(typeDef: { new(): T; }, ...ids: any[]): Promise<T | Error> {
+	public async get<T>(typeDef: { new(): T; }, ...ids: any[]): Promise<T | Error> {
 		let ref: T = new typeDef()
 		const className = ref.constructor.name
 		let tableName = TableNameFor(className);
@@ -104,7 +104,7 @@ export class Invocation {
 		}
 
 		try {
-			let res = await this.Connection.query(queryBody, ids);
+			let res = await this.connection.query(queryBody, ids);
 			for (var col of readCols.All) {
 				col.Set(ref, res.rows[0][col.Name]);
 			}
@@ -116,7 +116,7 @@ export class Invocation {
 	}
 
 	// GetAll returns all instances of T in it's respective table as an array.
-	public async GetAll<T>(typeDef: { new(): T; }): Promise<Array<T> | Error> {
+	public async getAll<T>(typeDef: { new(): T; }): Promise<Array<T> | Error> {
 		// build query
 		// execute query
 		// loop over results, bind each to a new object, add to the array.
@@ -125,7 +125,7 @@ export class Invocation {
 	}
 
 	// Create inserts the object into the db.
-	public async Create(obj: any): Promise<Error | null> {
+	public async create(obj: any): Promise<Error | null> {
 		const className = obj.constructor.name
 		const tableName = TableNameFor(className)
 		const cols = ColumnsFor(className)
@@ -143,7 +143,7 @@ export class Invocation {
 		}
 
 		try {
-			let res = await this.Connection.query(queryBody, colValues);
+			let res = await this.connection.query(queryBody, colValues);
 			if (serials.Len() > 0) {
 				let serial = serials.First();
 				serial.Set(obj, res.rows[0][serial.Name]);
@@ -156,16 +156,16 @@ export class Invocation {
 	}
 
 	// CreateMany inserts multiple objects at once.
-	public async CreateMany(...objs: any[]): Promise<Error | null> { return null }
+	public async createMany(...objs: any[]): Promise<Error | null> { return null }
 
 	// Update updates an object by primary key; it does not re-assign the pk value(s).
-	public async Update<T>(obj: T): Promise<Error | null> { return null }
+	public async update<T>(obj: T): Promise<Error | null> { return null }
 
 	// Upsert creates an object if it doesn't exit, otherwise it updates it.
-	public async Upsert<T>(obj: T): Promise<Error | null> { return null }
+	public async upsert<T>(obj: T): Promise<Error | null> { return null }
 
 	// Delete deletes a given object.
-	public async Delete(obj: any) {
+	public async delete(obj: any) {
 		const className = obj.constructor.name
 		const tableName = TableNameFor(className)
 		const cols = ColumnsFor(className)
@@ -191,7 +191,7 @@ export class Invocation {
 		}
 
 		try {
-			await this.Connection.query(queryBody, ids);
+			await this.connection.query(queryBody, ids);
 		} catch (e) {
 			return e;
 		}
@@ -201,7 +201,7 @@ export class Invocation {
 
 	// Truncate deletes *all* rows of a table using the truncate command.
 	// If the type implements a `serial` column it will restart the identity.
-	public async Truncate<T>(typeDef: { new(): T; }): Promise<Error | null> {
+	public async truncate<T>(typeDef: { new(): T; }): Promise<Error | null> {
 		let ref: T = new typeDef()
 		const className = ref.constructor.name
 		const tableName = TableNameFor(className)
@@ -215,7 +215,7 @@ export class Invocation {
 		}
 
 		try {
-			await this.Connection.query(queryBody);
+			await this.connection.query(queryBody);
 		} catch (e) {
 			return e;
 		}
