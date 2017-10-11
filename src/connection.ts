@@ -3,6 +3,16 @@ import { Invocation } from './invocation';
 import { Query } from './query';
 import { Populatable } from './interfaces';
 
+export interface ConnectionConfig {
+  host?: string;
+	port?: number;
+	database?: string;
+	schema?: string;
+	username?: string;
+	password?: string;
+	sslMode?: string;
+}
+
 // Connection represents the metadata used to make the initial conneciton.
 export class Connection {
 	host: string;
@@ -13,10 +23,24 @@ export class Connection {
 	password: string;
 	sslMode: string;
 
-	pool: Pool;
+  pool: Pool;
+
+  constructor(opts?: ConnectionConfig) {
+    if (opts) {
+      let { host, port, database, schema, username, password, sslMode } = opts;
+      this.host = host || 'localhost';
+      this.port = port || 5432;
+      this.database = database || '';
+      this.schema = schema || 'public';
+      this.username = username || '';
+      this.password = password || '';
+      this.sslMode = sslMode || '';
+    }
+  }
 
 	// Open either returns the current pool or creates a new pool.
 	public open() {
+    if (this.pool) return;
 		this.pool = new Pool({
 			host: this.host,
 			port: this.port,
@@ -97,7 +121,7 @@ export class Connection {
 	}
 
 	// Update opens a new connection and updates the object.
-	public async Update(obj: any): Promise<Error | null> {
+	public async update(obj: any): Promise<Error | null> {
 		let inv = await this.invoke()
 		try {
 			return inv.update(obj)
