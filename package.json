@@ -50,10 +50,10 @@
       "*.d.ts",
       "*.js.map"
     ],
-    "statements": 0,
-    "lines": 0,
-    "functions": 0,
-    "branches": 0,
+    "statements": 27,
+    "lines": 27,
+    "functions": 25,
+    "branches": 34,
     "reporter": [
       "html",
       "text"
