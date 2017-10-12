@@ -55,36 +55,36 @@ export class Invocation {
 		const className = ref.constructor.name
 		let tableName = TableNameFor(className);
 		let cols = ColumnsFor(className);
-		let readCols = cols.NotReadOnly(); // these actually exist on the table.
-		let pks = cols.PrimaryKey();
+		let readCols = cols.notReadOnly(); // these actually exist on the table.
+		let pks = cols.primaryKey();
 
-		if (pks.Len() == 0) {
+		if (pks.len() == 0) {
 			throw new Error('invalid type; no primary keys');
 		}
 
-		if (pks.Len() !== ids.length) {
+		if (pks.len() !== ids.length) {
 			throw new Error('insufficient argument value count for type primary keys');
 		}
 
-		let tokens = pks.Tokens();
+		let tokens = pks.tokens();
 
-		let columnNames = readCols.ColumnNames().join(',');
+		let columnNames = readCols.columnNames().join(',');
 
 		let queryBody = `SELECT ${columnNames} FROM ${tableName} WHERE `;
 
 		// loop over the pks, add the tokens etc.
-		for (var i = 0; i < pks.Len(); i++) {
-			var pk = pks.All[i];
+		for (var i = 0; i < pks.len(); i++) {
+			var pk = pks.all[i];
 
 			queryBody = queryBody + pk.Name + ' = ' + `$${i + 1}`;
 
-			if (i < pks.Len() - 1) {
+			if (i < pks.len() - 1) {
 				queryBody = queryBody + ' AND ';
 			}
 		}
 
     let res = await this.connection.query(queryBody, ids);
-    for (var col of readCols.All) {
+    for (var col of readCols.all) {
       col.Set(ref, res.rows[0][col.Name]);
     }
 		return ref;
@@ -104,22 +104,22 @@ export class Invocation {
 		const className = obj.constructor.name
 		const tableName = TableNameFor(className)
 		const cols = ColumnsFor(className)
-		const writeCols = cols.NotReadOnly().NotSerial()
-		const serials = cols.Serial()
+		const writeCols = cols.notReadOnly().notSerial()
+		const serials = cols.serial()
 
-		const colNames = writeCols.ColumnNames().join(',');
-		const colValues = writeCols.ColumnValues(obj);
-		const tokens = writeCols.Tokens().join(',');
+		const colNames = writeCols.columnNames().join(',');
+		const colValues = writeCols.columnValues(obj);
+		const tokens = writeCols.tokens().join(',');
 
 		let queryBody = `INSERT INTO ${tableName} (${colNames}) VALUES (${tokens})`;
 
-		if (serials.Len() > 0) {
-			queryBody = queryBody + ` RETURNING ${serials.First().Name}`;
+		if (serials.len() > 0) {
+			queryBody = queryBody + ` RETURNING ${serials.first().Name}`;
 		}
 
     let res = await this.connection.query(queryBody, colValues);
-    if (serials.Len() > 0) {
-      let serial = serials.First();
+    if (serials.len() > 0) {
+      let serial = serials.first();
       serial.Set(obj, res.rows[0][serial.Name]);
     }
 
@@ -140,21 +140,21 @@ export class Invocation {
 		const className = obj.constructor.name
 		const tableName = TableNameFor(className)
 		const cols = ColumnsFor(className)
-		const pks = cols.PrimaryKey()
+		const pks = cols.primaryKey()
 
-		if (pks.Len() == 0) {
+		if (pks.len() == 0) {
 			throw new Error('invalid type; no primary keys');
 		}
 
 		let ids = new Array<any>()
 		let queryBody = `DELETE FROM ${tableName} WHERE`
 		// loop over the pks, add the tokens etc.
-		for (var i = 0; i < pks.Len(); i++) {
-			var pk = pks.All[i];
+		for (var i = 0; i < pks.len(); i++) {
+			var pk = pks.all[i];
 
 			queryBody = queryBody + pk.Name + ' = ' + `${i + 1}`;
 
-			if (i < pks.Len() - 1) {
+			if (i < pks.len() - 1) {
 				queryBody = queryBody + ' AND ';
 			}
 
@@ -173,11 +173,11 @@ export class Invocation {
 		const className = ref.constructor.name
 		const tableName = TableNameFor(className)
 		const cols = ColumnsFor(className)
-		const serials = cols.Serial()
+		const serials = cols.serial()
 
 		let queryBody = `TRUNCATE ${tableName}`
 
-		if (serials.Len() > 0) {
+		if (serials.len() > 0) {
 			queryBody = queryBody + ' RESTART IDENTITY'
 		}
 

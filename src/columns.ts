@@ -1,137 +1,137 @@
 import { ColumnInfo } from './column_info';
 
 export class Columns {
-	public All: Array<ColumnInfo>;
-	public Lookup: Map<string, ColumnInfo>;
+	public all: Array<ColumnInfo>;
+	public lookup: Map<string, ColumnInfo>;
 
 	constructor() {
-		this.All = new Array<ColumnInfo>();
-		this.Lookup = new Map<string, ColumnInfo>();
+		this.all = new Array<ColumnInfo>();
+		this.lookup = new Map<string, ColumnInfo>();
 	}
 
 	// Add adds a column to the collection.
-	public Add(col: ColumnInfo): Columns {
-		this.All.push(col);
-		this.Lookup.set(col.Name, col);
+	public add(col: ColumnInfo): Columns {
+		this.all.push(col);
+		this.lookup.set(col.Name, col);
 		return this;
 	}
 
 	// AddMany adds an array of columns to the collection.
-	public AddMany(cols: Array<ColumnInfo>): Columns {
-		this.All = cols;
+	public addMany(cols: Array<ColumnInfo>): Columns {
+		this.all = cols;
 		for (var i = 0; i < cols.length; i++) {
-			this.Lookup.set(cols[i].Name, cols[i]);
+			this.lookup.set(cols[i].Name, cols[i]);
 		}
 		return this;
 	}
 
 	// First returns the first column in the collection.
-	public First(): ColumnInfo {
-		if (this.All.length === 0) {
+	public first(): ColumnInfo {
+		if (this.all.length === 0) {
 			return new ColumnInfo();
 		}
-		return this.All[0];
+		return this.all[0];
 	}
 
 	// Len returns the number of columns.
-	public Len(): number {
-		return this.All.length;
+	public len(): number {
+		return this.all.length;
 	}
 
-	public ColumnNames(): Array<string> {
+	public columnNames(): Array<string> {
 		let names = new Array<string>();
-		for (var col of this.All) {
+		for (var col of this.all) {
 			names.push(col.Name);
 		}
 		return names;
 	}
 
 	// ColumnValues returns the value for each column on a given object.
-	public ColumnValues(instance: any): Array<any> {
+	public columnValues(instance: any): Array<any> {
 		let values = new Array<any>();
-		for (var col of this.All) {
+		for (var col of this.all) {
 			values.push(col.Get(instance));
 		}
 		return values;
 	}
 
-	public Tokens(): Array<string> {
+	public tokens(): Array<string> {
 		let tokens = new Array<string>();
-		for (var i = 0; i < this.All.length; i++) {
+		for (var i = 0; i < this.all.length; i++) {
 			tokens.push(`$${i + 1}`);
 		}
 		return tokens;
 	}
 
-	public PrimaryKey(): Columns {
+	public primaryKey(): Columns {
 		var filtered = new Array<ColumnInfo>();
-		for (var i = 0; i < this.All.length; i++) {
-			if (this.All[i].IsPrimaryKey) {
-				filtered.push(this.All[i]);
+		for (var i = 0; i < this.all.length; i++) {
+			if (this.all[i].IsPrimaryKey) {
+				filtered.push(this.all[i]);
 			}
 		}
-		return new Columns().AddMany(filtered);
+		return new Columns().addMany(filtered);
 	}
 
-	public NotPrimaryKey(): Columns {
+	public notPrimaryKey(): Columns {
 		var filtered = new Array<ColumnInfo>();
-		for (var i = 0; i < this.All.length; i++) {
-			if (!this.All[i].IsPrimaryKey) {
-				filtered.push(this.All[i]);
+		for (var i = 0; i < this.all.length; i++) {
+			if (!this.all[i].IsPrimaryKey) {
+				filtered.push(this.all[i]);
 			}
 		}
-		return new Columns().AddMany(filtered);
+		return new Columns().addMany(filtered);
 	}
 
-	public Serial(): Columns {
+	public serial(): Columns {
 		var filtered = new Array<ColumnInfo>();
-		for (var i = 0; i < this.All.length; i++) {
-			if (this.All[i].IsSerial) {
-				filtered.push(this.All[i]);
+		for (var i = 0; i < this.all.length; i++) {
+			if (this.all[i].IsSerial) {
+				filtered.push(this.all[i]);
 			}
 		}
-		return new Columns().AddMany(filtered);
+		return new Columns().addMany(filtered);
 	}
 
-	public NotSerial(): Columns {
+	public notSerial(): Columns {
 		var filtered = new Array<ColumnInfo>();
-		for (var i = 0; i < this.All.length; i++) {
-			if (!this.All[i].IsSerial) {
-				filtered.push(this.All[i]);
+		for (var i = 0; i < this.all.length; i++) {
+			if (!this.all[i].IsSerial) {
+				filtered.push(this.all[i]);
 			}
 		}
-		return new Columns().AddMany(filtered);
+		return new Columns().addMany(filtered);
 	}
 
-	public ReadOnly(): Columns {
+	public readOnly(): Columns {
 		var filtered = new Array<ColumnInfo>();
-		for (var i = 0; i < this.All.length; i++) {
-			if (this.All[i].IsReadOnly) {
-				filtered.push(this.All[i]);
+		for (var i = 0; i < this.all.length; i++) {
+			if (this.all[i].IsReadOnly) {
+				filtered.push(this.all[i]);
 			}
 		}
-		return new Columns().AddMany(filtered);
+		return new Columns().addMany(filtered);
 	}
 
-	public NotReadOnly(): Columns {
+	public notReadOnly(): Columns {
 		var filtered = new Array<ColumnInfo>();
-		for (var i = 0; i < this.All.length; i++) {
-			if (!this.All[i].IsReadOnly) {
-				filtered.push(this.All[i]);
+		for (var i = 0; i < this.all.length; i++) {
+			if (!this.all[i].IsReadOnly) {
+				filtered.push(this.all[i]);
 			}
 		}
-		return new Columns().AddMany(filtered);
+		return new Columns().addMany(filtered);
 	}
 
 	// InsertCols returns the columns that will be set during an insert.
-	public InsertCols(): Columns {
-		return this.NotReadOnly().NotSerial();
+	public insertCols(): Columns {
+		return this.notReadOnly().notSerial();
 	}
 
 	// UpdateCols returns the columns that will be set during an update.
-	public UpdateCols(): Columns {
-		return this.NotReadOnly()
-			.NotSerial()
-			.NotPrimaryKey();
+	public updateCols(): Columns {
+		return this.notReadOnly()
+			.notSerial()
+			.notPrimaryKey();
 	}
 }

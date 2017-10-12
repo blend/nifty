@@ -15,9 +15,7 @@
     "build": "tsc -p .",
     "buildClean": "npm run clean && npm run build",
     "clean": "rm -rf ./dist",
-		"docker-reset": "chmod a+rx ./docker/test.sh && ./docker/test.sh",
-		"docker-stop": "docker rm -f test-postgres",
-    "test": "npm run docker-reset && npm run buildClean && NODE_ENV=test nyc --check-coverage -a ava && npm run docker-stop"
+    "test": "bash ./docker/test.sh"
 	},
 	"repository": "https://github.com/blendlabs/nifty",
 	"author": "Will Charczuk",
@@ -49,7 +47,7 @@
     "exclude": [
       "*.d.ts",
       "*.js.map",
-      "*interfaces.ts"
+      "interfaces.js"
     ],
     "statements": 62,
     "lines": 63,
