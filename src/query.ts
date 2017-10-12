@@ -1,26 +1,26 @@
 import { Client, QueryResult } from 'pg';
 import { Columns } from './columns';
-import { TableNameFor, ColumnsFor } from './metacache';
+import { tableNameFor, columnsFor } from './metacache';
 
 export class Query {
   results: QueryResult;
 
-  public Out<T>(typeDef: { new(): T; }): T {
+  public out<T>(typeDef: { new(): T; }): T {
     let ref: T = new typeDef()
     const className = ref.constructor.name
-    let cols = ColumnsFor(className);
-    let readCols = cols.NotReadOnly(); // these actually exist on the table.
-    for (var col of readCols.All) {
+    let cols = columnsFor(className);
+    let readCols = cols.notReadOnly(); // these actually exist on the table.
+    for (var col of readCols.all) {
       col.Set(ref, this.results.rows[0][col.Name]);
     }
     return ref;
   }
 
-  public OutMany<T>(): Promise<T[] | Error> {
+  public outMany<T>(): Promise<T[] | Error> {
     throw new Error('not implemented');
   }
 
-  public Scan(...values: any[]): Promise<Error | null> {
+  public scan(...values: any[]): Promise<Error | null> {
     throw new Error('not implemented');
   }
 }
