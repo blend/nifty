@@ -8,7 +8,7 @@ export interface ColumnOptions {
 }
 
 // Column defines the mapping relationship between the type field and a column on a table in the database.
-export function Column(name?: string, opts?: ColumnOptions) {
+export function column(name?: string, opts?: ColumnOptions) {
 	return function (target: any, key: string) {
 		let column = new ColumnInfo();
 
@@ -25,10 +25,10 @@ export function Column(name?: string, opts?: ColumnOptions) {
 			column.IsReadOnly = opts.ReadOnly || false;
 		}
 
-		column.Get = (instance: any): any => {
+		column.get = (instance: any): any => {
 			return instance[key];
 		};
-		column.Set = (instance: any, value: any) => {
+		column.set = (instance: any, value: any) => {
 			instance[key] = value;
 		};
 
@@ -36,7 +36,7 @@ export function Column(name?: string, opts?: ColumnOptions) {
 	}
 }
 
-export function Table(name?: string) {
+export function table(name?: string) {
 	return function (target: any) {
 		let tableName = name || target.name
 		addModel(target.name, tableName)
