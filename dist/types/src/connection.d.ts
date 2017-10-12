@@ -20,21 +20,21 @@ export declare class Connection {
     sslMode: string;
     pool: Pool;
     constructor(opts?: ConnectionConfig);
-    open(): void;
+    open(): Pool;
     invoke(): Promise<Invocation>;
-    exec(statement: string): Promise<Error | null>;
+    exec(statement: string): Promise<null>;
     query(statement: string, ...args: any[]): Promise<Query>;
     get<T>(typeDef: {
         new (): T;
     }, ...ids: any[]): Promise<T | Error>;
     getAll<T>(typeDef: {
         new (): T;
-    }): Promise<Array<T> | Error>;
-    create(obj: any): Promise<Error | null>;
-    createMany(...objs: any[]): Promise<Error | null>;
-    update(obj: any): Promise<Error | null>;
-    delete(obj: any): Promise<Error | null>;
+    }): Promise<Array<T>>;
+    create(obj: any): Promise<null>;
+    createMany(...objs: any[]): Promise<null>;
+    update(obj: any): Promise<null>;
+    delete(obj: any): Promise<null>;
     truncate<T>(typeDef: {
         new (): T;
-    }): Promise<Error | null>;
+    }): Promise<null>;
 }

@@ -1,6 +1,6 @@
 import { QueryResult } from 'pg';
 export declare class Query {
-    Results: QueryResult;
+    results: QueryResult;
     Out<T>(typeDef: {
         new (): T;
     }): T;

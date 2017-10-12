@@ -5,24 +5,25 @@ export interface InvocationConfig {
 }
 export declare class Invocation {
     connection: Client;
-    exec(statement: string, ...args: any[]): Promise<Error | null>;
+    constructor(config?: InvocationConfig);
+    exec(statement: string, ...args: any[]): Promise<null>;
     query(statement: string, ...args: any[]): Promise<Query>;
-    begin(): Promise<Error | null>;
-    commit(): Promise<Error | null>;
-    rollback(): Promise<Error | null>;
-    close(): Promise<Error | null>;
+    begin(): Promise<null>;
+    commit(): Promise<null>;
+    rollback(): Promise<null>;
+    close(): Promise<null>;
     get<T>(typeDef: {
         new (): T;
-    }, ...ids: any[]): Promise<T | Error>;
+    }, ...ids: any[]): Promise<T>;
     getAll<T>(typeDef: {
         new (): T;
-    }): Promise<Array<T> | Error>;
-    create(obj: any): Promise<Error | null>;
-    createMany(...objs: any[]): Promise<Error | null>;
-    update<T>(obj: T): Promise<Error | null>;
-    upsert<T>(obj: T): Promise<Error | null>;
-    delete(obj: any): Promise<any>;
+    }): Promise<Array<T>>;
+    create(obj: any): Promise<null>;
+    createMany(...objs: any[]): Promise<null>;
+    update<T>(obj: T): Promise<null>;
+    upsert<T>(obj: T): Promise<null>;
+    delete(obj: any): Promise<null>;
     truncate<T>(typeDef: {
         new (): T;
-    }): Promise<Error | null>;
+    }): Promise<null>;
 }
