@@ -39,15 +39,17 @@ export class Connection {
   }
 
 	// Open either returns the current pool or creates a new pool.
-	public open() {
-    if (this.pool) return;
-		this.pool = new Pool({
-			host: this.host,
-			port: this.port,
-			database: this.database,
-			user: this.username,
-			password: this.password
-		});
+	public open(): Pool {
+    if (!this.pool) {
+      this.pool = new Pool({
+        host: this.host,
+        port: this.port,
+        database: this.database,
+        user: this.username,
+        password: this.password
+      });
+    }
+    return this.pool;
 	}
 
 	// Invoke opens a new connection.
@@ -59,11 +61,13 @@ export class Connection {
 	}
 
 	// Exec opens a new connection and runs a given statement.
-	public async exec(statement: string): Promise<Error | null> {
+	public async exec(statement: string): Promise<null> {
 		let inv = await this.invoke()
 		try {
 			return inv.exec(statement)
-		} finally {
+		} catch(e) {
+      throw e;
+    } finally {
 			inv.close()
 		}
 	}
@@ -84,44 +88,52 @@ export class Connection {
 		let inv = await this.invoke()
 		try {
 			return inv.get<T>(typeDef, ...ids)
-		} finally {
+		} catch(e) {
+      throw e;
+    }finally {
 			inv.close()
 		}
 	}
 
 	// GetAll opens a new connection and gets all instances of a given model.
 	// note: the `typeDef` is required because we can't infer the <T> ctor at runtime.
-	public async getAll<T>(typeDef: { new(): T; }): Promise<Array<T> | Error> {
+	public async getAll<T>(typeDef: { new(): T; }): Promise<Array<T>> {
 		let inv = await this.invoke()
 		try {
 			return inv.getAll<T>(typeDef)
-		} finally {
+		} catch(e) {
+      throw e;
+    } finally {
 			inv.close()
 		}
 	}
 
 	// Create opens a new connection and inserts the object.
-	public async create(obj: any): Promise<Error | null> {
+	public async create(obj: any): Promise<null> {
 		let inv = await this.invoke()
 		try {
 			return inv.create(obj)
-		} finally {
+		} catch(e) {
+      throw e;
+    } finally {
 			inv.close()
 		}
 	}
 
 	// Create opens a new connection and inserts the object.
-	public async createMany(...objs: any[]): Promise<Error | null> {
+	public async createMany(...objs: any[]): Promise<null> {
 		let inv = await this.invoke()
 		try {
 			return inv.createMany(...objs)
-		} finally {
+		} catch(e) {
+      throw e;
+    } finally {
 			inv.close()
 		}
 	}
 
 	// Update opens a new connection and updates the object.
-	public async update(obj: any): Promise<Error | null> {
+	public async update(obj: any): Promise<null> {
 		let inv = await this.invoke()
 		try {
 			return inv.update(obj)
@@ -131,7 +143,7 @@ export class Connection {
 	}
 
 	// Delete opens a new connection and deletes a given object.
-	public async delete(obj: any): Promise<Error | null> {
+	public async delete(obj: any): Promise<null> {
 		let inv = await this.invoke()
 		try {
 			return inv.delete(obj)
@@ -142,11 +154,13 @@ export class Connection {
 
 	// Truncate opens a new connection and truncates a table represented by a type.
 	// note: the `typeDef` is required because we can't infer the <T> ctor at runtime.
-	public async truncate<T>(typeDef: { new(): T; }): Promise<Error | null> {
+	public async truncate<T>(typeDef: { new(): T; }): Promise<null> {
 		let inv = await this.invoke()
 		try {
 			return inv.truncate<T>(typeDef)
-		} finally {
+		} catch(e) {
+      throw e;
+    } finally {
 			inv.close()
 		}
 	}

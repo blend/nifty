@@ -20,6 +20,7 @@
   },
   "noUnusedLocals": true,
   "inlineSourceMap": true,
+  "suppressImplicitAnyIndexErrors": true,
 	"include": [
 		"./examples/*.ts",
     "./src/*.ts",

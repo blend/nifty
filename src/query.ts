@@ -3,7 +3,7 @@ import { Columns } from './columns';
 import { TableNameFor, ColumnsFor } from './metacache';
 
 export class Query {
-  Results: QueryResult;
+  results: QueryResult;
 
   public Out<T>(typeDef: { new(): T; }): T {
     let ref: T = new typeDef()
@@ -11,7 +11,7 @@ export class Query {
     let cols = ColumnsFor(className);
     let readCols = cols.NotReadOnly(); // these actually exist on the table.
     for (var col of readCols.All) {
-      col.Set(ref, this.Results.rows[0][col.Name]);
+      col.Set(ref, this.results.rows[0][col.Name]);
     }
     return ref;
   }

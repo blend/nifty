@@ -1,24 +1,14 @@
 import test from 'ava';
 import { Connection } from '../src/connection';
-import { Table, Column } from '../src/decorators';
 import { connectionConfig } from './testConfig';
 
-@Table('test')
-class TestData {
-  @Column('id', { PrimaryKey: true, Serial: true })
-  id: number;
-
-  @Column('name')
-  name: string;
-}
-
-test('can open connection', async t => {
+test('open: can open connection', async t => {
   const conn = new Connection();
   await conn.open();
   t.not(conn.pool, undefined);
 });
 
-test('invoke creates a connection', async t => {
+test('invoke: creates a connection', async t => {
   const conn = new Connection(connectionConfig);
   conn.open();
   const invocation = await conn.invoke();
@@ -26,7 +16,9 @@ test('invoke creates a connection', async t => {
   await invocation.close();
 });
 
-test('exec can execute basic queries', async t => {
+test('exec: can execute basic queries', async t => {
+  // TODO: rollback all the effects from each of these tests
+  // seems like we should only be able to query with the invocation
   const conn = new Connection(connectionConfig);
   conn.open();
 
@@ -38,12 +30,14 @@ test('exec can execute basic queries', async t => {
 
   const selectResult = await conn.exec('SELECT * FROM test');
   t.is(selectResult, null);
+
+  await conn.exec('DROP TABLE test');
 });
 
-test('exec returns an error on failed queries', async t => {
+test('exec: throws an error on failed queries', async t => {
   const conn = new Connection(connectionConfig);
   conn.open();
 
-  const err = await conn.exec('DROP TABLE doesnt_exist');
+  const err = await t.throws(conn.exec('DROP TABLE doesnt_exist'));
   t.truthy(err);
 });
