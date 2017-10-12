@@ -1,9 +1,9 @@
 import { QueryResult } from 'pg';
 export declare class Query {
     results: QueryResult;
-    Out<T>(typeDef: {
+    out<T>(typeDef: {
         new (): T;
     }): T;
-    OutMany<T>(): Promise<T[] | Error>;
-    Scan(...values: any[]): Promise<Error | null>;
+    outMany<T>(): Promise<T[] | Error>;
+    scan(...values: any[]): Promise<Error | null>;
 }

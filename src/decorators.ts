@@ -1,4 +1,4 @@
-import { AddModel, AddModelColumn } from './metacache';
+import { addModel, addModelColumn } from './metacache';
 import { ColumnInfo } from './column_info';
 
 export interface ColumnOptions {
@@ -32,13 +32,13 @@ export function Column(name?: string, opts?: ColumnOptions) {
 			instance[key] = value;
 		};
 
-		AddModelColumn(target.constructor.name, column);
+		addModelColumn(target.constructor.name, column);
 	}
 }
 
 export function Table(name?: string) {
 	return function (target: any) {
 		let tableName = name || target.name
-		AddModel(target.name, tableName)
+		addModel(target.name, tableName)
 	}
 }

@@ -1,7 +1,7 @@
 import { Client, QueryResult } from 'pg';
 import { Columns } from './columns';
 import { Query } from './query';
-import { TableNameFor, ColumnsFor } from './metacache';
+import { tableNameFor, columnsFor } from './metacache';
 import { Populatable } from './interfaces';
 
 export interface InvocationConfig {
@@ -53,8 +53,8 @@ export class Invocation {
 	public async get<T>(typeDef: { new(): T; }, ...ids: any[]): Promise<T> {
 		let ref: T = new typeDef()
 		const className = ref.constructor.name
-		let tableName = TableNameFor(className);
-		let cols = ColumnsFor(className);
+		let tableName = tableNameFor(className);
+		let cols = columnsFor(className);
 		let readCols = cols.notReadOnly(); // these actually exist on the table.
 		let pks = cols.primaryKey();
 
@@ -102,8 +102,8 @@ export class Invocation {
 	// Create inserts the object into the db.
 	public async create(obj: any): Promise<null> {
 		const className = obj.constructor.name
-		const tableName = TableNameFor(className)
-		const cols = ColumnsFor(className)
+		const tableName = tableNameFor(className)
+		const cols = columnsFor(className)
 		const writeCols = cols.notReadOnly().notSerial()
 		const serials = cols.serial()
 
@@ -138,8 +138,8 @@ export class Invocation {
 	// Delete deletes a given object.
 	public async delete(obj: any) {
 		const className = obj.constructor.name
-		const tableName = TableNameFor(className)
-		const cols = ColumnsFor(className)
+		const tableName = tableNameFor(className)
+		const cols = columnsFor(className)
 		const pks = cols.primaryKey()
 
 		if (pks.len() == 0) {
@@ -171,8 +171,8 @@ export class Invocation {
 	public async truncate<T>(typeDef: { new(): T; }): Promise<null> {
 		let ref: T = new typeDef()
 		const className = ref.constructor.name
-		const tableName = TableNameFor(className)
-		const cols = ColumnsFor(className)
+		const tableName = tableNameFor(className)
+		const cols = columnsFor(className)
 		const serials = cols.serial()
 
 		let queryBody = `TRUNCATE ${tableName}`
