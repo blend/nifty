@@ -12,7 +12,7 @@ export class Columns {
 	// Add adds a column to the collection.
 	public add(col: ColumnInfo): Columns {
 		this.all.push(col);
-		this.lookup.set(col.Name, col);
+		this.lookup.set(col.name, col);
 		return this;
 	}
 
@@ -20,7 +20,7 @@ export class Columns {
 	public addMany(cols: Array<ColumnInfo>): Columns {
 		this.all = cols;
 		for (var i = 0; i < cols.length; i++) {
-			this.lookup.set(cols[i].Name, cols[i]);
+			this.lookup.set(cols[i].name, cols[i]);
 		}
 		return this;
 	}
@@ -41,7 +41,7 @@ export class Columns {
 	public columnNames(): Array<string> {
 		let names = new Array<string>();
 		for (var col of this.all) {
-			names.push(col.Name);
+			names.push(col.name);
 		}
 		return names;
 	}
@@ -50,7 +50,7 @@ export class Columns {
 	public columnValues(instance: any): Array<any> {
 		let values = new Array<any>();
 		for (var col of this.all) {
-			values.push(col.Get(instance));
+			values.push(col.get(instance));
 		}
 		return values;
 	}
@@ -66,7 +66,7 @@ export class Columns {
 	public primaryKey(): Columns {
 		var filtered = new Array<ColumnInfo>();
 		for (var i = 0; i < this.all.length; i++) {
-			if (this.all[i].IsPrimaryKey) {
+			if (this.all[i].isPrimaryKey) {
 				filtered.push(this.all[i]);
 			}
 		}
@@ -76,7 +76,7 @@ export class Columns {
 	public notPrimaryKey(): Columns {
 		var filtered = new Array<ColumnInfo>();
 		for (var i = 0; i < this.all.length; i++) {
-			if (!this.all[i].IsPrimaryKey) {
+			if (!this.all[i].isPrimaryKey) {
 				filtered.push(this.all[i]);
 			}
 		}
@@ -86,7 +86,7 @@ export class Columns {
 	public serial(): Columns {
 		var filtered = new Array<ColumnInfo>();
 		for (var i = 0; i < this.all.length; i++) {
-			if (this.all[i].IsSerial) {
+			if (this.all[i].isSerial) {
 				filtered.push(this.all[i]);
 			}
 		}
@@ -96,7 +96,7 @@ export class Columns {
 	public notSerial(): Columns {
 		var filtered = new Array<ColumnInfo>();
 		for (var i = 0; i < this.all.length; i++) {
-			if (!this.all[i].IsSerial) {
+			if (!this.all[i].isSerial) {
 				filtered.push(this.all[i]);
 			}
 		}
@@ -106,7 +106,7 @@ export class Columns {
 	public readOnly(): Columns {
 		var filtered = new Array<ColumnInfo>();
 		for (var i = 0; i < this.all.length; i++) {
-			if (this.all[i].IsReadOnly) {
+			if (this.all[i].isReadOnly) {
 				filtered.push(this.all[i]);
 			}
 		}
@@ -116,7 +116,7 @@ export class Columns {
 	public notReadOnly(): Columns {
 		var filtered = new Array<ColumnInfo>();
 		for (var i = 0; i < this.all.length; i++) {
-			if (!this.all[i].IsReadOnly) {
+			if (!this.all[i].isReadOnly) {
 				filtered.push(this.all[i]);
 			}
 		}

@@ -76,7 +76,7 @@ export class Invocation {
 		for (var i = 0; i < pks.len(); i++) {
 			var pk = pks.all[i];
 
-			queryBody = queryBody + pk.Name + ' = ' + `$${i + 1}`;
+			queryBody = queryBody + pk.name + ' = ' + `$${i + 1}`;
 
 			if (i < pks.len() - 1) {
 				queryBody = queryBody + ' AND ';
@@ -85,7 +85,7 @@ export class Invocation {
 
     let res = await this.connection.query(queryBody, ids);
     for (var col of readCols.all) {
-      col.Set(ref, res.rows[0][col.Name]);
+      col.set(ref, res.rows[0][col.name]);
     }
 		return ref;
 	}
@@ -114,13 +114,13 @@ export class Invocation {
 		let queryBody = `INSERT INTO ${tableName} (${colNames}) VALUES (${tokens})`;
 
 		if (serials.len() > 0) {
-			queryBody = queryBody + ` RETURNING ${serials.first().Name}`;
+			queryBody = queryBody + ` RETURNING ${serials.first().name}`;
 		}
 
     let res = await this.connection.query(queryBody, colValues);
     if (serials.len() > 0) {
       let serial = serials.first();
-      serial.Set(obj, res.rows[0][serial.Name]);
+      serial.set(obj, res.rows[0][serial.name]);
     }
 
 		return null;
@@ -152,13 +152,13 @@ export class Invocation {
 		for (var i = 0; i < pks.len(); i++) {
 			var pk = pks.all[i];
 
-			queryBody = queryBody + pk.Name + ' = ' + `${i + 1}`;
+			queryBody = queryBody + pk.name + ' = ' + `${i + 1}`;
 
 			if (i < pks.len() - 1) {
 				queryBody = queryBody + ' AND ';
 			}
 
-			ids.push(pk.Get(obj))
+			ids.push(pk.get(obj))
 		}
 
     await this.connection.query(queryBody, ids);

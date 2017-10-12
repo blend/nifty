@@ -4,6 +4,6 @@ export declare class Query {
     out<T>(typeDef: {
         new (): T;
     }): T;
-    outMany<T>(): Promise<T[] | Error>;
-    scan(...values: any[]): Promise<Error | null>;
+    outMany<T>(): Promise<T[]>;
+    scan(...values: any[]): Promise<null>;
 }

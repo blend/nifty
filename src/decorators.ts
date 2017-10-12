@@ -8,21 +8,21 @@ export interface ColumnOptions {
 }
 
 // Column defines the mapping relationship between the type field and a column on a table in the database.
-export function column(name?: string, opts?: ColumnOptions) {
+export function Column(name?: string, opts?: ColumnOptions) {
 	return function (target: any, key: string) {
 		let column = new ColumnInfo();
 
 		if (!!name) {
-			column.Name = name;
+			column.name = name;
 		} else {
-			column.Name = key;
+			column.name = key;
 		}
 
-		column.Field = key;
+		column.field = key;
 		if (!!opts) {
-			column.IsPrimaryKey = opts.PrimaryKey || false;
-			column.IsSerial = opts.Serial || false;
-			column.IsReadOnly = opts.ReadOnly || false;
+			column.isPrimaryKey = opts.PrimaryKey || false;
+			column.isSerial = opts.Serial || false;
+			column.isReadOnly = opts.ReadOnly || false;
 		}
 
 		column.get = (instance: any): any => {
@@ -36,7 +36,7 @@ export function column(name?: string, opts?: ColumnOptions) {
 	}
 }
 
-export function table(name?: string) {
+export function Table(name?: string) {
 	return function (target: any) {
 		let tableName = name || target.name
 		addModel(target.name, tableName)

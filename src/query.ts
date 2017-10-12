@@ -11,16 +11,16 @@ export class Query {
     let cols = columnsFor(className);
     let readCols = cols.notReadOnly(); // these actually exist on the table.
     for (var col of readCols.all) {
-      col.Set(ref, this.results.rows[0][col.Name]);
+      col.set(ref, this.results.rows[0][col.name]);
     }
     return ref;
   }
 
-  public outMany<T>(): Promise<T[] | Error> {
+  public outMany<T>(): Promise<T[]> {
     throw new Error('not implemented');
   }
 
-  public scan(...values: any[]): Promise<Error | null> {
+  public scan(...values: any[]): Promise<null> {
     throw new Error('not implemented');
   }
 }
