@@ -48,7 +48,8 @@
     ],
     "exclude": [
       "*.d.ts",
-      "*.js.map"
+      "*.js.map",
+      "*interfaces.ts"
     ],
     "statements": 62,
     "lines": 63,
