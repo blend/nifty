@@ -49,10 +49,10 @@
       "*.js.map",
       "interfaces.js"
     ],
-    "statements": 62,
-    "lines": 63,
-    "functions": 62,
-    "branches": 55,
+    "statements": 66,
+    "lines": 66,
+    "functions": 64,
+    "branches": 56,
     "reporter": [
       "html",
       "text"
