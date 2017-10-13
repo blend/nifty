@@ -82,7 +82,7 @@ test('truncate: can delete all rows in table and restart serial identity', async
   await inv.rollback();
 });
 
-test('can create and get record given object mapping', async t => {
+test('create/get: can create and get record given object mapping', async t => {
   const inv = await createConnectionAndInvoke();
   const testRecord = new TestData();
   testRecord.name = 'world test record';
@@ -93,4 +93,18 @@ test('can create and get record given object mapping', async t => {
   await inv.rollback();
   t.is(res.id, 1);
   t.is(res.name, 'world test record');
+});
+
+test('delete: can delete record given object mapping', async t => {
+  const inv = await createConnectionAndInvoke();
+  const testRecord = new TestData();
+  testRecord.name = 'bingoWasHisNameO';
+  await inv.begin();
+  await inv.query(createTableQuery);
+  await inv.create(testRecord);
+  await inv.delete(testRecord)
+  const res = await inv.get(TestData, testRecord.id) as TestData;
+  await inv.rollback();
+  t.is(res.id, 1);
+  t.is(res.name, 'bingoWasHisNameO');
 });
