@@ -169,11 +169,11 @@ export class Invocation {
 	// Truncate deletes *all* rows of a table using the truncate command.
 	// If the type implements a `serial` column it will restart the identity.
 	public async truncate<T>(typeDef: { new(): T; }): Promise<null> {
-		let ref: T = new typeDef()
-		const className = ref.constructor.name
-		const tableName = tableNameFor(className)
-		const cols = columnsFor(className)
-		const serials = cols.serial()
+		let ref: T = new typeDef();
+		const className = ref.constructor.name;
+		const tableName = tableNameFor(className);
+		const cols = columnsFor(className);
+		const serials = cols.serial();
 
 		let queryBody = `TRUNCATE ${tableName}`
 
