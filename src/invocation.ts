@@ -147,12 +147,12 @@ export class Invocation {
 		}
 
 		let ids = new Array<any>()
-		let queryBody = `DELETE FROM ${tableName} WHERE`
+		let queryBody = `DELETE FROM ${tableName} WHERE `
 		// loop over the pks, add the tokens etc.
 		for (var i = 0; i < pks.len(); i++) {
 			var pk = pks.all[i];
 
-			queryBody = queryBody + pk.name + ' = ' + `${i + 1}`;
+			queryBody = queryBody + pk.name + ' = ' + `$${i + 1}`;
 
 			if (i < pks.len() - 1) {
 				queryBody = queryBody + ' AND ';
