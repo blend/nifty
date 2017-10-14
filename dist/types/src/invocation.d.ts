@@ -19,7 +19,7 @@ export declare class Invocation {
         new (): T;
     }): Promise<Array<T>>;
     create(obj: any): Promise<null>;
-    createMany(...objs: any[]): Promise<null>;
+    createMany(objs: any[]): Promise<null>;
     update<T>(obj: T): Promise<null>;
     upsert<T>(obj: T): Promise<null>;
     delete(obj: any): Promise<null>;

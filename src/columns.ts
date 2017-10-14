@@ -19,7 +19,7 @@ export class Columns {
 	// AddMany adds an array of columns to the collection.
 	public addMany(cols: Array<ColumnInfo>): Columns {
 		this.all = cols;
-		for (var i = 0; i < cols.length; i++) {
+		for (let i = 0; i < cols.length; i++) {
 			this.lookup.set(cols[i].name, cols[i]);
 		}
 		return this;
@@ -39,8 +39,8 @@ export class Columns {
 	}
 
 	public columnNames(): Array<string> {
-		let names = new Array<string>();
-		for (var col of this.all) {
+		const names = new Array<string>();
+		for (let col of this.all) {
 			names.push(col.name);
 		}
 		return names;
@@ -48,24 +48,24 @@ export class Columns {
 
 	// ColumnValues returns the value for each column on a given object.
 	public columnValues(instance: any): Array<any> {
-		let values = new Array<any>();
-		for (var col of this.all) {
+		const values = new Array<any>();
+		for (let col of this.all) {
 			values.push(col.get(instance));
 		}
 		return values;
 	}
 
 	public tokens(): Array<string> {
-		let tokens = new Array<string>();
-		for (var i = 0; i < this.all.length; i++) {
+		const tokens = new Array<string>();
+		for (let i = 0; i < this.all.length; i++) {
 			tokens.push(`$${i + 1}`);
 		}
 		return tokens;
 	}
 
 	public primaryKey(): Columns {
-		var filtered = new Array<ColumnInfo>();
-		for (var i = 0; i < this.all.length; i++) {
+		const filtered = new Array<ColumnInfo>();
+		for (let i = 0; i < this.all.length; i++) {
 			if (this.all[i].isPrimaryKey) {
 				filtered.push(this.all[i]);
 			}
@@ -74,8 +74,8 @@ export class Columns {
 	}
 
 	public notPrimaryKey(): Columns {
-		var filtered = new Array<ColumnInfo>();
-		for (var i = 0; i < this.all.length; i++) {
+		const filtered = new Array<ColumnInfo>();
+		for (let i = 0; i < this.all.length; i++) {
 			if (!this.all[i].isPrimaryKey) {
 				filtered.push(this.all[i]);
 			}
@@ -84,8 +84,8 @@ export class Columns {
 	}
 
 	public serial(): Columns {
-		var filtered = new Array<ColumnInfo>();
-		for (var i = 0; i < this.all.length; i++) {
+		const filtered = new Array<ColumnInfo>();
+		for (let i = 0; i < this.all.length; i++) {
 			if (this.all[i].isSerial) {
 				filtered.push(this.all[i]);
 			}
@@ -94,8 +94,8 @@ export class Columns {
 	}
 
 	public notSerial(): Columns {
-		var filtered = new Array<ColumnInfo>();
-		for (var i = 0; i < this.all.length; i++) {
+		const filtered = new Array<ColumnInfo>();
+		for (let i = 0; i < this.all.length; i++) {
 			if (!this.all[i].isSerial) {
 				filtered.push(this.all[i]);
 			}
@@ -104,8 +104,8 @@ export class Columns {
 	}
 
 	public readOnly(): Columns {
-		var filtered = new Array<ColumnInfo>();
-		for (var i = 0; i < this.all.length; i++) {
+		const filtered = new Array<ColumnInfo>();
+		for (let i = 0; i < this.all.length; i++) {
 			if (this.all[i].isReadOnly) {
 				filtered.push(this.all[i]);
 			}
@@ -114,8 +114,8 @@ export class Columns {
 	}
 
 	public notReadOnly(): Columns {
-		var filtered = new Array<ColumnInfo>();
-		for (var i = 0; i < this.all.length; i++) {
+		const filtered = new Array<ColumnInfo>();
+		for (let i = 0; i < this.all.length; i++) {
 			if (!this.all[i].isReadOnly) {
 				filtered.push(this.all[i]);
 			}
