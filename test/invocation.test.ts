@@ -36,7 +36,7 @@ function createManyRecords(n: number) {
   const data = [];
   for (let i = 0; i < n; i++) {
     const item = new TestInvocation();
-    item.name = `item${i}`;
+    item.name = `item${i+1}`;
     item.monies = i*2;
     data.push(item);
   }
@@ -130,10 +130,11 @@ test('createMany: adds multiple objects', async t => {
   const data = createManyRecords(5);
   const inv = await createConnectionAndInvoke();
   await inv.begin();
+  await inv.query(createTableQuery);
   await inv.createMany(data);
   const res = await inv.query('SELECT * from test_invocation');
   t.is(res.results.rowCount, 5);
-  t.is(res.results.rows.map((e) => e.name), ['item1', 'item2', 'item3', 'item4', 'item5']);
+  t.deepEqual(res.results.rows.map((e) => e.name), ['item1', 'item2', 'item3', 'item4', 'item5']);
   await inv.rollback();
 });
 
@@ -142,6 +143,7 @@ test('createMany: throws an error if all objects are not of same type', async t 
   data.push(new TestDifferent());
   const inv = await createConnectionAndInvoke();
   await inv.begin();
+  await inv.query(createTableQuery);
   const err = await t.throws(inv.createMany(data));
   t.truthy(err);
   t.is(err.message, 'createMany requires the objects to all be of the same type');

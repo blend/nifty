@@ -130,7 +130,7 @@ export class Invocation {
 	// CreateMany inserts multiple objects at once.
 	public async createMany(objs: any[]): Promise<null> {
     if (objs.length < 1) return null;
-    const tableNames = _.uniq(_.map(objs, obj => { console.log(obj); return tableNameFor(obj.constructor.name); }));
+    const tableNames = _.uniq(_.map(objs, obj => tableNameFor(obj.constructor.name)));
     if (_.size(tableNames) > 1) throw new Error('createMany requires the objects to all be of the same type');
     const className = objs[0].constructor.name;
     const tableName = tableNames[0];
@@ -152,7 +152,7 @@ export class Invocation {
         if (y < writeCols.all.length - 1) valuesString += ',';
       }
       valuesString += ')';
-      if (x < objs.length - 1) valuesString += ' ';
+      if (x < objs.length - 1) valuesString += ',';
     }
 
     _.forEach(objs, obj => {
@@ -163,10 +163,8 @@ export class Invocation {
     });
 
     const queryBody = `INSERT INTO ${tableName} (${colNames}) VALUES ${valuesString}`;
-    console.log('\nqueryBody\n', queryBody);
-    console.log('\nallColValues\n', _.flatten(allColValues));
 
-    await this.connection.query(queryBody, allColValues);
+    await this.connection.query(queryBody, _.flatten(allColValues));
     return null;
   }
 
