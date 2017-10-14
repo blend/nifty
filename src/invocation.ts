@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import { Client, QueryResult } from 'pg';
 import { Columns } from './columns';
 import { Query } from './query';
@@ -73,8 +74,8 @@ export class Invocation {
 		let queryBody = `SELECT ${columnNames} FROM ${tableName} WHERE `;
 
 		// loop over the pks, add the tokens etc.
-		for (var i = 0; i < pks.len(); i++) {
-			var pk = pks.all[i];
+		for (let i = 0; i < pks.len(); i++) {
+			const pk = pks.all[i];
 
 			queryBody = queryBody + pk.name + ' = ' + `$${i + 1}`;
 
@@ -84,7 +85,7 @@ export class Invocation {
 		}
 
     let res = await this.connection.query(queryBody, ids);
-    for (var col of readCols.all) {
+    for (let col of readCols.all) {
       col.set(ref, res.rows[0][col.name]);
     }
 		return ref;
@@ -101,15 +102,15 @@ export class Invocation {
 
 	// Create inserts the object into the db.
 	public async create(obj: any): Promise<null> {
-		const className = obj.constructor.name
-		const tableName = tableNameFor(className)
-		const cols = columnsFor(className)
-		const writeCols = cols.notReadOnly().notSerial()
-		const serials = cols.serial()
+		const className = obj.constructor.name;
+		const tableName = tableNameFor(className);
+		const cols = columnsFor(className);
+		const writeCols = cols.notReadOnly().notSerial();
+		const serials = cols.serial();
 
 		const colNames = writeCols.columnNames().join(',');
 		const colValues = writeCols.columnValues(obj);
-		const tokens = writeCols.tokens().join(',');
+    const tokens = writeCols.tokens().join(',');
 
 		let queryBody = `INSERT INTO ${tableName} (${colNames}) VALUES (${tokens})`;
 
@@ -127,7 +128,47 @@ export class Invocation {
 	}
 
 	// CreateMany inserts multiple objects at once.
-	public async createMany(...objs: any[]): Promise<null> { return null }
+	public async createMany(objs: any[]): Promise<null> {
+    if (objs.length < 1) return null;
+    const tableNames = _.uniq(_.map(objs, obj => { console.log(obj); return tableNameFor(obj.constructor.name); }));
+    if (_.size(tableNames) > 1) throw new Error('createMany requires the objects to all be of the same type');
+    const className = objs[0].constructor.name;
+    const tableName = tableNames[0];
+
+    const allColValues: any[] = [];
+
+    // only use column names once
+    const cols = columnsFor(className);
+    const writeCols = cols.insertCols();
+    const colNames = writeCols.columnNames().join(',');
+
+    let valuesString = '';
+    let metaIndex = 1;
+    for (let x = 0; x < objs.length; x++) {
+      valuesString += '(';
+      for (let y = 0; y < writeCols.all.length; y++) {
+        valuesString += `$${metaIndex}`;
+        metaIndex++;
+        if (y < writeCols.all.length - 1) valuesString += ',';
+      }
+      valuesString += ')';
+      if (x < objs.length - 1) valuesString += ' ';
+    }
+
+    _.forEach(objs, obj => {
+      const colValues = writeCols.columnValues(obj);
+      const tokens = writeCols.tokens().join(',');
+
+      allColValues.push(colValues);
+    });
+
+    const queryBody = `INSERT INTO ${tableName} (${colNames}) VALUES ${valuesString}`;
+    console.log('\nqueryBody\n', queryBody);
+    console.log('\nallColValues\n', _.flatten(allColValues));
+
+    await this.connection.query(queryBody, allColValues);
+    return null;
+  }
 
 	// Update updates an object by primary key; it does not re-assign the pk value(s).
 	public async update<T>(obj: T): Promise<null> { return null }
@@ -149,8 +190,8 @@ export class Invocation {
 		let ids = new Array<any>()
 		let queryBody = `DELETE FROM ${tableName} WHERE `
 		// loop over the pks, add the tokens etc.
-		for (var i = 0; i < pks.len(); i++) {
-			var pk = pks.all[i];
+		for (let i = 0; i < pks.len(); i++) {
+			const pk = pks.all[i];
 
 			queryBody = queryBody + pk.name + ' = ' + `$${i + 1}`;
 

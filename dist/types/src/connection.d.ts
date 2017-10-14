@@ -31,7 +31,7 @@ export declare class Connection {
         new (): T;
     }): Promise<Array<T>>;
     create(obj: any): Promise<null>;
-    createMany(...objs: any[]): Promise<null>;
+    createMany(objs: any[]): Promise<null>;
     update(obj: any): Promise<null>;
     delete(obj: any): Promise<null>;
     truncate<T>(typeDef: {

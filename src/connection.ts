@@ -121,10 +121,10 @@ export class Connection {
 	}
 
 	// Create opens a new connection and inserts the object.
-	public async createMany(...objs: any[]): Promise<null> {
+	public async createMany(objs: any[]): Promise<null> {
 		let inv = await this.invoke()
 		try {
-			return inv.createMany(...objs)
+			return inv.createMany(objs)
 		} catch(e) {
       throw e;
     } finally {
