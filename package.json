@@ -19,7 +19,7 @@
   },
   "repository": "https://github.com/blendlabs/nifty",
   "author": "Will Charczuk",
-  "main": "dist/src/connection.js",
+  "main": "dist/src/index.js",
   "typings": "dist/types/src/index.d.ts",
   "dependencies": {
     "lodash": "^4.17.4",
