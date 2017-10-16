@@ -13,13 +13,12 @@
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
 		"declarationDir": "dist/types",
-		"outDir": "dist",
+    "outDir": "dist",
 		"typeRoots": [
 			"node_modules/@types"
 		]
   },
   "noUnusedLocals": true,
-  "inlineSourceMap": true,
   "suppressImplicitAnyIndexErrors": true,
 	"include": [
 		"./examples/*.ts",
