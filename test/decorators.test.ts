@@ -40,7 +40,7 @@ async function createConnectionAndInvoke() {
   return await conn.invoke();
 }
 
-test.only('decorators', async t => {
+test('decorators', async t => {
     const inv = await createConnectionAndInvoke();
     const testRecord = new TestData();
     testRecord.notName = 'bingoWasHisNameO';
