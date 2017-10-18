@@ -9,12 +9,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const ava_1 = require("ava");
+const _ = require("lodash");
 const connection_1 = require("../src/connection");
 const testConfig_1 = require("./testConfig");
-ava_1.default('open: can open connection', (t) => __awaiter(this, void 0, void 0, function* () {
+ava_1.default('open: can open connection with pg default pool size', (t) => __awaiter(this, void 0, void 0, function* () {
     const conn = new connection_1.Connection();
     yield conn.open();
     t.not(conn.pool, undefined);
+}));
+ava_1.default('open: can set max/min pool size with connectionConfig', (t) => __awaiter(this, void 0, void 0, function* () {
+    const configClone = _.cloneDeep(testConfig_1.connectionConfig);
+    configClone.minPoolSize = 4;
+    configClone.maxPoolSize = 10;
+    const conn = new connection_1.Connection(testConfig_1.connectionConfig);
+    const pool = conn.open();
+    t.truthy(pool);
+    t.is(pool.totalCount, 4);
 }));
 ava_1.default('invoke: creates a connection', (t) => __awaiter(this, void 0, void 0, function* () {
     const conn = new connection_1.Connection(testConfig_1.connectionConfig);

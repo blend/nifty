@@ -14,7 +14,7 @@ const invocation_1 = require("./invocation");
 class Connection {
     constructor(opts) {
         if (opts) {
-            let { host, port, database, schema, username, password, sslMode } = opts;
+            let { host, port, database, schema, username, password, sslMode, minPoolSize, maxPoolSize } = opts;
             this.host = host || 'localhost';
             this.port = port || 5432;
             this.database = database || '';
@@ -22,10 +22,12 @@ class Connection {
             this.username = username || '';
             this.password = password || '';
             this.sslMode = sslMode || '';
+            this.minPoolSize = minPoolSize;
+            this.maxPoolSize = maxPoolSize;
         }
     }
     // Open either returns the current pool or creates a new pool.
-    open(maxClients) {
+    open() {
         if (!this.pool) {
             this.pool = new pg_1.Pool({
                 host: this.host,
@@ -33,7 +35,8 @@ class Connection {
                 database: this.database,
                 user: this.username,
                 password: this.password,
-                max: maxClients
+                min: this.minPoolSize,
+                max: this.maxPoolSize
             });
         }
         return this.pool;

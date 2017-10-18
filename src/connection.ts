@@ -10,7 +10,9 @@ export interface ConnectionConfig {
 	schema?: string;
 	username?: string;
 	password?: string;
-	sslMode?: string;
+  sslMode?: string;
+  minPoolSize?: number;
+  maxPoolSize?: number;
 }
 
 // Connection represents the metadata used to make the initial conneciton.
@@ -21,13 +23,15 @@ export class Connection {
 	schema: string;
 	username: string;
 	password: string;
-	sslMode: string;
+  sslMode: string;
+  minPoolSize: number | undefined; // pg defaults these
+  maxPoolSize: number | undefined; // pg defaults these
 
   pool: Pool;
 
   constructor(opts?: ConnectionConfig) {
     if (opts) {
-      let { host, port, database, schema, username, password, sslMode } = opts;
+      let { host, port, database, schema, username, password, sslMode, minPoolSize, maxPoolSize } = opts;
       this.host = host || 'localhost';
       this.port = port || 5432;
       this.database = database || '';
@@ -35,11 +39,13 @@ export class Connection {
       this.username = username || '';
       this.password = password || '';
       this.sslMode = sslMode || '';
+      this.minPoolSize = minPoolSize;
+      this.maxPoolSize = maxPoolSize;
     }
   }
 
 	// Open either returns the current pool or creates a new pool.
-	public open(maxClients?: number): Pool {
+	public open(): Pool {
     if (!this.pool) {
       this.pool = new Pool({
         host: this.host,
@@ -47,7 +53,8 @@ export class Connection {
         database: this.database,
         user: this.username,
         password: this.password,
-        max: maxClients
+        min: this.minPoolSize,
+        max: this.maxPoolSize
       });
     }
     return this.pool;

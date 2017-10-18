@@ -1,11 +1,21 @@
 import test from 'ava';
+import * as _ from 'lodash';
 import { Connection } from '../src/connection';
 import { connectionConfig } from './testConfig';
 
-test('open: can open connection', async t => {
+test('open: can open connection with pg default pool size', async t => {
   const conn = new Connection();
   await conn.open();
   t.not(conn.pool, undefined);
+});
+
+test('open: can set max/min pool size with connectionConfig', async t => {
+  const configClone = _.cloneDeep(connectionConfig);
+  configClone.minPoolSize = 4;
+  configClone.maxPoolSize = 10;
+  const conn = new Connection(connectionConfig);
+  const pool = conn.open();
+  t.truthy(pool);
 });
 
 test('invoke: creates a connection', async t => {

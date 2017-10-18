@@ -9,6 +9,8 @@ export interface ConnectionConfig {
     username?: string;
     password?: string;
     sslMode?: string;
+    minPoolSize?: number;
+    maxPoolSize?: number;
 }
 export declare class Connection {
     host: string;
@@ -18,9 +20,11 @@ export declare class Connection {
     username: string;
     password: string;
     sslMode: string;
+    minPoolSize: number | undefined;
+    maxPoolSize: number | undefined;
     pool: Pool;
     constructor(opts?: ConnectionConfig);
-    open(maxClients?: number): Pool;
+    open(): Pool;
     invoke(): Promise<Invocation>;
     exec(statement: string): Promise<null>;
     query(statement: string, ...args: any[]): Promise<Query>;
