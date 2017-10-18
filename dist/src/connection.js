@@ -25,14 +25,15 @@ class Connection {
         }
     }
     // Open either returns the current pool or creates a new pool.
-    open() {
+    open(maxClients) {
         if (!this.pool) {
             this.pool = new pg_1.Pool({
                 host: this.host,
                 port: this.port,
                 database: this.database,
                 user: this.username,
-                password: this.password
+                password: this.password,
+                max: maxClients
             });
         }
         return this.pool;

@@ -20,7 +20,7 @@ export declare class Connection {
     sslMode: string;
     pool: Pool;
     constructor(opts?: ConnectionConfig);
-    open(): Pool;
+    open(maxClients?: number): Pool;
     invoke(): Promise<Invocation>;
     exec(statement: string): Promise<null>;
     query(statement: string, ...args: any[]): Promise<Query>;
