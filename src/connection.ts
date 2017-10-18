@@ -39,14 +39,15 @@ export class Connection {
   }
 
 	// Open either returns the current pool or creates a new pool.
-	public open(): Pool {
+	public open(maxClients?: number): Pool {
     if (!this.pool) {
       this.pool = new Pool({
         host: this.host,
         port: this.port,
         database: this.database,
         user: this.username,
-        password: this.password
+        password: this.password,
+        max: maxClients
       });
     }
     return this.pool;
