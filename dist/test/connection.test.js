@@ -24,7 +24,6 @@ ava_1.default('open: can set max/min pool size with connectionConfig', (t) => __
     const conn = new connection_1.Connection(testConfig_1.connectionConfig);
     const pool = conn.open();
     t.truthy(pool);
-    t.is(pool.totalCount, 4);
 }));
 ava_1.default('invoke: creates a connection', (t) => __awaiter(this, void 0, void 0, function* () {
     const conn = new connection_1.Connection(testConfig_1.connectionConfig);

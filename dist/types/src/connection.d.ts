@@ -30,7 +30,7 @@ export declare class Connection {
     query(statement: string, ...args: any[]): Promise<Query>;
     get<T>(typeDef: {
         new (): T;
-    }, ...ids: any[]): Promise<T | Error>;
+    }, ...ids: any[]): Promise<T>;
     getAll<T>(typeDef: {
         new (): T;
     }): Promise<Array<T>>;

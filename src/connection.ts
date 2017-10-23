@@ -92,7 +92,7 @@ export class Connection {
 
 	// Get opens a new connection and fetches a single instance by id(s).
 	// note: the `typeDef` is required because we can't infer the <T> ctor at runtime.
-	public async get<T>(typeDef: { new(): T; }, ...ids: any[]): Promise<T | Error> {
+	public async get<T>(typeDef: { new(): T; }, ...ids: any[]): Promise<T> {
 		let inv = await this.invoke()
 		try {
 			return inv.get<T>(typeDef, ...ids);
