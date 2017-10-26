@@ -1,4 +1,13 @@
 "use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -12,6 +21,20 @@ const ava_1 = require("ava");
 const _ = require("lodash");
 const connection_1 = require("../src/connection");
 const testConfig_1 = require("./testConfig");
+const decorators_1 = require("../src/decorators");
+let TestConnection = class TestConnection {
+};
+__decorate([
+    decorators_1.Column('id', { PrimaryKey: true, Serial: true }),
+    __metadata("design:type", Number)
+], TestConnection.prototype, "id", void 0);
+__decorate([
+    decorators_1.Column('name'),
+    __metadata("design:type", String)
+], TestConnection.prototype, "name", void 0);
+TestConnection = __decorate([
+    decorators_1.Table('test_connection')
+], TestConnection);
 ava_1.default('open: can open connection with pg default pool size', (t) => __awaiter(this, void 0, void 0, function* () {
     const conn = new connection_1.Connection();
     yield conn.open();
@@ -50,5 +73,18 @@ ava_1.default('exec: throws an error on failed queries', (t) => __awaiter(this, 
     conn.open();
     const err = yield t.throws(conn.exec('DROP TABLE doesnt_exist'));
     t.truthy(err);
+}));
+ava_1.default('create/get: creates/gets given object', (t) => __awaiter(this, void 0, void 0, function* () {
+    const conn = new connection_1.Connection(testConfig_1.connectionConfig);
+    const testObj = new TestConnection();
+    testObj.id = 1;
+    testObj.name = 'test';
+    conn.open();
+    yield conn.exec('CREATE TABLE IF NOT EXISTS test_connection (id serial primary key, name varchar(255))');
+    yield conn.create(testObj);
+    const res = yield conn.get(TestConnection, testObj.id);
+    t.is(res.id, 1);
+    t.is(res.name, 'test');
+    yield conn.exec('DROP TABLE test_connection');
 }));
 //# sourceMappingURL=connection.test.js.map
