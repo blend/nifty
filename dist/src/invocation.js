@@ -157,7 +157,8 @@ class Invocation {
                 allColValues.push(colValues);
             });
             const queryBody = `INSERT INTO ${tableName} (${colNames}) VALUES ${valuesString}`;
-            yield this.connection.query(queryBody, _.flatten(allColValues));
+            const res = yield this.connection.query(queryBody, _.flatten(allColValues));
+            console.log('\n\nres ', JSON.stringify(res, null, 2));
             return null;
         });
     }
@@ -179,7 +180,7 @@ class Invocation {
             if (pks.len() == 0) {
                 throw new Error('invalid type; no primary keys');
             }
-            let ids = new Array();
+            let ids = [];
             let queryBody = `DELETE FROM ${tableName} WHERE `;
             // loop over the pks, add the tokens etc.
             for (let i = 0; i < pks.len(); i++) {

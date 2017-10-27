@@ -74,4 +74,4 @@ test('create/get: creates/gets given object', async t => {
   t.is(res.id, 1);
   t.is(res.name, 'test');
   await conn.exec('DROP TABLE test_connection');
-})
+});

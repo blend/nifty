@@ -141,7 +141,6 @@ export class Invocation {
     const cols = columnsFor(className);
     const writeCols = cols.insertCols();
     const colNames = writeCols.columnNames().join(',');
-
     let valuesString = '';
     let metaIndex = 1;
     for (let x = 0; x < objs.length; x++) {
@@ -185,7 +184,7 @@ export class Invocation {
 			throw new Error('invalid type; no primary keys');
 		}
 
-		let ids = new Array<any>()
+		let ids: any[] = [];
 		let queryBody = `DELETE FROM ${tableName} WHERE `
 		// loop over the pks, add the tokens etc.
 		for (let i = 0; i < pks.len(); i++) {
