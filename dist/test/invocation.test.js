@@ -18,6 +18,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const ava_1 = require("ava");
+const _ = require("lodash");
 const connection_1 = require("../src/connection");
 const decorators_1 = require("../src/decorators");
 const testConfig_1 = require("./testConfig");
@@ -105,7 +106,7 @@ ava_1.default('truncate: can delete all rows in table and restart serial identit
     }));
     const res = yield inv.query('SELECT * FROM test_invocation');
     t.is(res.results.rowCount, 5);
-    t.deepEqual(res.results.rows.map((e) => e.id), [1, 2, 3, 4, 5]);
+    t.deepEqual(_.map(res.results.rows, 'id'), [1, 2, 3, 4, 5]);
     yield inv.truncate(TestInvocation);
     const emptyRes = yield inv.query('SELECT * FROM test_invocation');
     t.is(emptyRes.results.rowCount, 0);
@@ -149,7 +150,8 @@ ava_1.default('createMany: adds multiple objects', (t) => __awaiter(this, void 0
     yield inv.createMany(data);
     const res = yield inv.query('SELECT * from test_invocation');
     t.is(res.results.rowCount, 5);
-    t.deepEqual(res.results.rows.map((e) => e.name), ['item1', 'item2', 'item3', 'item4', 'item5']);
+    t.deepEqual(_.map(res.results.rows, 'name'), ['item1', 'item2', 'item3', 'item4', 'item5']);
+    t.deepEqual(_.map(data, 'id'), [1, 2, 3, 4, 5]);
     yield inv.rollback();
 }));
 ava_1.default('createMany: throws an error if all objects are not of same type', (t) => __awaiter(this, void 0, void 0, function* () {

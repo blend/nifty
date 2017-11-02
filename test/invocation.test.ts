@@ -1,4 +1,5 @@
 import test from 'ava';
+import * as _ from 'lodash';
 import { Connection } from '../src/connection';
 import { Invocation } from '../src/invocation';
 import { Table, Column } from '../src/decorators';
@@ -84,7 +85,7 @@ test('truncate: can delete all rows in table and restart serial identity', async
   });
   const res = await inv.query('SELECT * FROM test_invocation');
   t.is(res.results.rowCount, 5);
-  t.deepEqual(res.results.rows.map((e) => e.id) , [1,2,3,4,5]);
+  t.deepEqual(_.map(res.results.rows, 'id') , [1,2,3,4,5]);
 
   await inv.truncate(TestInvocation);
   const emptyRes = await inv.query('SELECT * FROM test_invocation');
@@ -134,7 +135,8 @@ test('createMany: adds multiple objects', async t => {
   await inv.createMany(data);
   const res = await inv.query('SELECT * from test_invocation');
   t.is(res.results.rowCount, 5);
-  t.deepEqual(res.results.rows.map((e) => e.name), ['item1', 'item2', 'item3', 'item4', 'item5']);
+  t.deepEqual(_.map(res.results.rows, 'name'), ['item1', 'item2', 'item3', 'item4', 'item5']);
+  t.deepEqual(_.map(data, 'id'), [1, 2, 3, 4, 5]);
   await inv.rollback();
 });
 

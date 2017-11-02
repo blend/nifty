@@ -69,7 +69,7 @@ export class Connection {
 	}
 
 	// Exec opens a new connection and runs a given statement.
-	public async exec(statement: string): Promise<null> {
+	public async exec(statement: string): Promise<void> {
 		let inv = await this.invoke()
 		try {
 			return inv.exec(statement);
@@ -117,7 +117,7 @@ export class Connection {
 	}
 
 	// Create opens a new connection and inserts the object.
-	public async create(obj: any): Promise<null> {
+	public async create(obj: any): Promise<void> {
 		let inv = await this.invoke()
 		try {
 			return inv.create(obj);
@@ -129,7 +129,7 @@ export class Connection {
 	}
 
 	// Create opens a new connection and inserts the object.
-	public async createMany(objs: any[]): Promise<null> {
+	public async createMany(objs: any[]): Promise<void> {
 		let inv = await this.invoke();
 		try {
 			return inv.createMany(objs)
@@ -141,7 +141,7 @@ export class Connection {
 	}
 
 	// Update opens a new connection and updates the object.
-	public async update(obj: any): Promise<null> {
+	public async update(obj: any): Promise<void> {
 		let inv = await this.invoke();
 		try {
 			return inv.update(obj)
@@ -151,7 +151,7 @@ export class Connection {
 	}
 
 	// Delete opens a new connection and deletes a given object.
-	public async delete(obj: any): Promise<null> {
+	public async delete(obj: any): Promise<void> {
 		let inv = await this.invoke();
 		try {
 			return inv.delete(obj)
@@ -162,12 +162,27 @@ export class Connection {
 
 	// Truncate opens a new connection and truncates a table represented by a type.
 	// note: the `typeDef` is required because we can't infer the <T> ctor at runtime.
-	public async truncate<T>(typeDef: { new(): T; }): Promise<null> {
+	public async truncate<T>(typeDef: { new(): T; }): Promise<void> {
 		let inv = await this.invoke();
 		try {
 			return inv.truncate<T>(typeDef)
 		} catch(e) {
       throw e;
+    } finally {
+			inv.close();
+		}
+  }
+
+  public async inTx(txFn: (inv: Invocation) => Promise<any>): Promise<any> {
+    let inv = await this.invoke();
+		try {
+      await inv.begin();
+      const res = await txFn(inv);
+      await inv.commit();
+      return res;
+		} catch(err) {
+      await inv.rollback();
+      throw err;
     } finally {
 			inv.close();
 		}

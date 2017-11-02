@@ -1,6 +1,7 @@
 import test from 'ava';
 import * as _ from 'lodash';
 import { Connection } from '../src/connection';
+import { Invocation } from '../src/invocation';
 import { connectionConfig } from './testConfig';
 import { Table, Column } from '../src/decorators';
 
@@ -13,10 +14,16 @@ class TestConnection {
   name: string;
 }
 
+test.before(async t => {
+  const conn = new Connection(connectionConfig);
+  conn.open();
+  await conn.exec('CREATE TABLE IF NOT EXISTS test_connection (id serial primary key, name varchar(255))');
+});
+
 test('open: can open connection with pg default pool size', async t => {
   const conn = new Connection();
-  await conn.open();
-  t.not(conn.pool, undefined);
+  conn.open();
+  t.truthy(conn.pool);
 });
 
 test('open: can set max/min pool size with connectionConfig', async t => {
@@ -32,7 +39,7 @@ test('invoke: creates a connection', async t => {
   const conn = new Connection(connectionConfig);
   conn.open();
   const invocation = await conn.invoke();
-  t.not(invocation.connection, undefined);
+  t.truthy(invocation.connection);
   await invocation.close();
 });
 
@@ -43,13 +50,13 @@ test('exec: can execute basic queries', async t => {
   conn.open();
 
   const createResult = await conn.exec('CREATE TABLE IF NOT EXISTS test (id serial not null, name varchar(255))');
-  t.is(createResult, null);
+  t.is(createResult, undefined);
 
   const insertResult = await conn.exec(`INSERT INTO test (name) VALUES ('testvalue')`);
-  t.is(insertResult, null);
+  t.is(insertResult, undefined);
 
   const selectResult = await conn.exec('SELECT * FROM test');
-  t.is(selectResult, null);
+  t.is(selectResult, undefined);
 
   await conn.exec('DROP TABLE test');
 });
@@ -65,13 +72,31 @@ test('exec: throws an error on failed queries', async t => {
 test('create/get: creates/gets given object', async t => {
   const conn = new Connection(connectionConfig);
   const testObj = new TestConnection();
-  testObj.id = 1;
   testObj.name = 'test';
   conn.open();
-  await conn.exec('CREATE TABLE IF NOT EXISTS test_connection (id serial primary key, name varchar(255))');
   await conn.create(testObj);
+  const hi = await conn.query(`SELECT * FROM test_connection`);
   const res = await conn.get(TestConnection, testObj.id);
-  t.is(res.id, 1);
   t.is(res.name, 'test');
-  await conn.exec('DROP TABLE test_connection');
+});
+
+test('inTx: can execute multiple calls in a transaction', async t => {
+  const conn = new Connection(connectionConfig);
+  conn.open();
+
+  const txFn = async function(inv: Invocation) {
+    const testObj = new TestConnection();
+    testObj.name = 'test';
+    await inv.create(testObj);
+    const first = await inv.get(TestConnection, testObj.id);
+    t.is(first.name, 'test');
+    await inv.query(`INSERT INTO test_connection(name) VALUES ('secondone')`);
+    await inv.rollback();
+    return first;
+  }
+
+  const res = await conn.inTx(txFn);
+  t.is(res.name, 'test');
+  const { results } = await conn.query('SELECT * FROM test_connection');
+  t.is(results.rowCount, 0);
 });

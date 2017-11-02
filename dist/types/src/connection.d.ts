@@ -26,7 +26,7 @@ export declare class Connection {
     constructor(opts?: ConnectionConfig);
     open(): Pool;
     invoke(): Promise<Invocation>;
-    exec(statement: string): Promise<null>;
+    exec(statement: string): Promise<void>;
     query(statement: string, ...args: any[]): Promise<Query>;
     get<T>(typeDef: {
         new (): T;
@@ -34,11 +34,12 @@ export declare class Connection {
     getAll<T>(typeDef: {
         new (): T;
     }): Promise<Array<T>>;
-    create(obj: any): Promise<null>;
-    createMany(objs: any[]): Promise<null>;
-    update(obj: any): Promise<null>;
-    delete(obj: any): Promise<null>;
+    create(obj: any): Promise<void>;
+    createMany(objs: any[]): Promise<void>;
+    update(obj: any): Promise<void>;
+    delete(obj: any): Promise<void>;
     truncate<T>(typeDef: {
         new (): T;
-    }): Promise<null>;
+    }): Promise<void>;
+    inTx(txFn: (inv: Invocation) => Promise<any>): Promise<any>;
 }

@@ -179,6 +179,24 @@ class Connection {
             }
         });
     }
+    inTx(txFn) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let inv = yield this.invoke();
+            try {
+                yield inv.begin();
+                const res = yield txFn(inv);
+                yield inv.commit();
+                return res;
+            }
+            catch (err) {
+                yield inv.rollback();
+                throw err;
+            }
+            finally {
+                inv.close();
+            }
+        });
+    }
 }
 exports.Connection = Connection;
 //# sourceMappingURL=connection.js.map

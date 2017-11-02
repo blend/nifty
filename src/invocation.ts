@@ -17,9 +17,8 @@ export class Invocation {
   }
 
 	// Exec runs a given statement. Throws an error if a sql error occurs.
-	public async exec(statement: string, ...args: any[]): Promise<null> {
+	public async exec(statement: string, ...args: any[]): Promise<void> {
     await this.connection.query(statement, ...args);
-		return null;
 	}
 
   // Query runs a given query with a given set of arguments, and returns a bound result.
@@ -30,25 +29,21 @@ export class Invocation {
     return q;
 	}
 
-	public async begin(): Promise<null> {
+	public async begin(): Promise<void> {
     await this.connection.query('BEGIN');
-    return null;
 	}
 
-	public async commit(): Promise<null> {
+	public async commit(): Promise<void> {
     await this.connection.query('COMMIT');
-		return null;
 	}
 
-	public async rollback(): Promise<null> {
+	public async rollback(): Promise<void> {
     await this.connection.query('ROLLBACK');
-		return null;
 	}
 
 	// Close closes the connection.
-	public async close(): Promise<null> {
+	public async close(): Promise<void> {
     await this.connection.release()
-    return null;
 	}
 
 	public async get<T>(typeDef: { new(): T; }, ...ids: any[]): Promise<T> {
@@ -101,7 +96,7 @@ export class Invocation {
 	}
 
 	// Create inserts the object into the db.
-	public async create(obj: any): Promise<null> {
+	public async create(obj: any): Promise<void> {
 		const className = obj.constructor.name;
 		const tableName = tableNameFor(className);
 		const cols = columnsFor(className);
@@ -115,21 +110,19 @@ export class Invocation {
 		let queryBody = `INSERT INTO ${tableName} (${colNames}) VALUES (${tokens})`;
 
 		if (serials.len() > 0) {
-			queryBody = queryBody + ` RETURNING ${serials.first().name}`;
+			queryBody += ` RETURNING ${serials.first().name}`;
 		}
 
-    let res = await this.connection.query(queryBody, colValues);
+    const res = await this.connection.query(queryBody, colValues);
     if (serials.len() > 0) {
       let serial = serials.first();
       serial.set(obj, res.rows[0][serial.name]);
     }
-
-		return null;
 	}
 
 	// CreateMany inserts multiple objects at once.
-	public async createMany(objs: any[]): Promise<null> {
-    if (objs.length < 1) return null;
+	public async createMany(objs: any[]): Promise<void> {
+    if (objs.length < 1) return;
     const tableNames = _.uniq(_.map(objs, obj => tableNameFor(obj.constructor.name)));
     if (_.size(tableNames) > 1) throw new Error('createMany requires the objects to all be of the same type');
     const className = objs[0].constructor.name;
@@ -139,6 +132,7 @@ export class Invocation {
 
     // only use column names once
     const cols = columnsFor(className);
+    const serials = cols.serial();
     const writeCols = cols.insertCols();
     const colNames = writeCols.columnNames().join(',');
     let valuesString = '';
@@ -161,20 +155,26 @@ export class Invocation {
       allColValues.push(colValues);
     });
 
-    const queryBody = `INSERT INTO ${tableName} (${colNames}) VALUES ${valuesString}`;
+    const queryBody = `INSERT INTO ${tableName} (${colNames}) VALUES ${valuesString} RETURNING ${serials.first().name}`;
 
-    await this.connection.query(queryBody, _.flatten(allColValues));
-    return null;
+    const { rows } = await this.connection.query(queryBody, _.flatten(allColValues));
+
+    if (serials.len() > 0) {
+      _.each(rows, (row, i) => {
+        let serial = serials.first();
+        serial.set(objs[i], rows[i][serial.name]);
+      })
+    }
   }
 
 	// Update updates an object by primary key; it does not re-assign the pk value(s).
-	public async update<T>(obj: T): Promise<null> { return null }
+	public async update<T>(obj: T): Promise<void> { return; }
 
 	// Upsert creates an object if it doesn't exit, otherwise it updates it.
-	public async upsert<T>(obj: T): Promise<null> { return null }
+	public async upsert<T>(obj: T): Promise<void> { return; }
 
 	// Delete deletes a given object.
-	public async delete(obj: any) {
+	public async delete(obj: any): Promise<void> {
 		const className = obj.constructor.name
 		const tableName = tableNameFor(className)
 		const cols = columnsFor(className)
@@ -200,13 +200,11 @@ export class Invocation {
 		}
 
     await this.connection.query(queryBody, ids);
-
-		return null;
 	}
 
 	// Truncate deletes *all* rows of a table using the truncate command.
 	// If the type implements a `serial` column it will restart the identity.
-	public async truncate<T>(typeDef: { new(): T; }): Promise<null> {
+	public async truncate<T>(typeDef: { new(): T; }): Promise<void> {
 		let ref: T = new typeDef();
 		const className = ref.constructor.name;
 		const tableName = tableNameFor(className);
@@ -220,6 +218,5 @@ export class Invocation {
 		}
 
     await this.connection.query(queryBody);
-		return null
 	}
 }

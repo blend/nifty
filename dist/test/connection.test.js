@@ -35,10 +35,15 @@ __decorate([
 TestConnection = __decorate([
     decorators_1.Table('test_connection')
 ], TestConnection);
+ava_1.default.before((t) => __awaiter(this, void 0, void 0, function* () {
+    const conn = new connection_1.Connection(testConfig_1.connectionConfig);
+    conn.open();
+    yield conn.exec('CREATE TABLE IF NOT EXISTS test_connection (id serial primary key, name varchar(255))');
+}));
 ava_1.default('open: can open connection with pg default pool size', (t) => __awaiter(this, void 0, void 0, function* () {
     const conn = new connection_1.Connection();
-    yield conn.open();
-    t.not(conn.pool, undefined);
+    conn.open();
+    t.truthy(conn.pool);
 }));
 ava_1.default('open: can set max/min pool size with connectionConfig', (t) => __awaiter(this, void 0, void 0, function* () {
     const configClone = _.cloneDeep(testConfig_1.connectionConfig);
@@ -52,7 +57,7 @@ ava_1.default('invoke: creates a connection', (t) => __awaiter(this, void 0, voi
     const conn = new connection_1.Connection(testConfig_1.connectionConfig);
     conn.open();
     const invocation = yield conn.invoke();
-    t.not(invocation.connection, undefined);
+    t.truthy(invocation.connection);
     yield invocation.close();
 }));
 ava_1.default('exec: can execute basic queries', (t) => __awaiter(this, void 0, void 0, function* () {
@@ -61,11 +66,11 @@ ava_1.default('exec: can execute basic queries', (t) => __awaiter(this, void 0, 
     const conn = new connection_1.Connection(testConfig_1.connectionConfig);
     conn.open();
     const createResult = yield conn.exec('CREATE TABLE IF NOT EXISTS test (id serial not null, name varchar(255))');
-    t.is(createResult, null);
+    t.is(createResult, undefined);
     const insertResult = yield conn.exec(`INSERT INTO test (name) VALUES ('testvalue')`);
-    t.is(insertResult, null);
+    t.is(insertResult, undefined);
     const selectResult = yield conn.exec('SELECT * FROM test');
-    t.is(selectResult, null);
+    t.is(selectResult, undefined);
     yield conn.exec('DROP TABLE test');
 }));
 ava_1.default('exec: throws an error on failed queries', (t) => __awaiter(this, void 0, void 0, function* () {
@@ -77,14 +82,31 @@ ava_1.default('exec: throws an error on failed queries', (t) => __awaiter(this, 
 ava_1.default('create/get: creates/gets given object', (t) => __awaiter(this, void 0, void 0, function* () {
     const conn = new connection_1.Connection(testConfig_1.connectionConfig);
     const testObj = new TestConnection();
-    testObj.id = 1;
     testObj.name = 'test';
     conn.open();
-    yield conn.exec('CREATE TABLE IF NOT EXISTS test_connection (id serial primary key, name varchar(255))');
     yield conn.create(testObj);
+    const hi = yield conn.query(`SELECT * FROM test_connection`);
     const res = yield conn.get(TestConnection, testObj.id);
-    t.is(res.id, 1);
     t.is(res.name, 'test');
-    yield conn.exec('DROP TABLE test_connection');
+}));
+ava_1.default('inTx: can execute multiple calls in a transaction', (t) => __awaiter(this, void 0, void 0, function* () {
+    const conn = new connection_1.Connection(testConfig_1.connectionConfig);
+    conn.open();
+    const txFn = function (inv) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const testObj = new TestConnection();
+            testObj.name = 'test';
+            yield inv.create(testObj);
+            const first = yield inv.get(TestConnection, testObj.id);
+            t.is(first.name, 'test');
+            yield inv.query(`INSERT INTO test_connection(name) VALUES ('secondone')`);
+            yield inv.rollback();
+            return first;
+        });
+    };
+    const res = yield conn.inTx(txFn);
+    t.is(res.name, 'test');
+    const { results } = yield conn.query('SELECT * FROM test_connection');
+    t.is(results.rowCount, 0);
 }));
 //# sourceMappingURL=connection.test.js.map

@@ -20,7 +20,6 @@ class Invocation {
     exec(statement, ...args) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.connection.query(statement, ...args);
-            return null;
         });
     }
     // Query runs a given query with a given set of arguments, and returns a bound result.
@@ -35,26 +34,22 @@ class Invocation {
     begin() {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.connection.query('BEGIN');
-            return null;
         });
     }
     commit() {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.connection.query('COMMIT');
-            return null;
         });
     }
     rollback() {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.connection.query('ROLLBACK');
-            return null;
         });
     }
     // Close closes the connection.
     close() {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.connection.release();
-            return null;
         });
     }
     get(typeDef, ...ids) {
@@ -112,21 +107,20 @@ class Invocation {
             const tokens = writeCols.tokens().join(',');
             let queryBody = `INSERT INTO ${tableName} (${colNames}) VALUES (${tokens})`;
             if (serials.len() > 0) {
-                queryBody = queryBody + ` RETURNING ${serials.first().name}`;
+                queryBody += ` RETURNING ${serials.first().name}`;
             }
-            let res = yield this.connection.query(queryBody, colValues);
+            const res = yield this.connection.query(queryBody, colValues);
             if (serials.len() > 0) {
                 let serial = serials.first();
                 serial.set(obj, res.rows[0][serial.name]);
             }
-            return null;
         });
     }
     // CreateMany inserts multiple objects at once.
     createMany(objs) {
         return __awaiter(this, void 0, void 0, function* () {
             if (objs.length < 1)
-                return null;
+                return;
             const tableNames = _.uniq(_.map(objs, obj => metacache_1.tableNameFor(obj.constructor.name)));
             if (_.size(tableNames) > 1)
                 throw new Error('createMany requires the objects to all be of the same type');
@@ -135,6 +129,7 @@ class Invocation {
             const allColValues = [];
             // only use column names once
             const cols = metacache_1.columnsFor(className);
+            const serials = cols.serial();
             const writeCols = cols.insertCols();
             const colNames = writeCols.columnNames().join(',');
             let valuesString = '';
@@ -156,19 +151,23 @@ class Invocation {
                 const tokens = writeCols.tokens().join(',');
                 allColValues.push(colValues);
             });
-            const queryBody = `INSERT INTO ${tableName} (${colNames}) VALUES ${valuesString}`;
-            const res = yield this.connection.query(queryBody, _.flatten(allColValues));
-            console.log('\n\nres ', JSON.stringify(res, null, 2));
-            return null;
+            const queryBody = `INSERT INTO ${tableName} (${colNames}) VALUES ${valuesString} RETURNING ${serials.first().name}`;
+            const { rows } = yield this.connection.query(queryBody, _.flatten(allColValues));
+            if (serials.len() > 0) {
+                _.each(rows, (row, i) => {
+                    let serial = serials.first();
+                    serial.set(objs[i], rows[i][serial.name]);
+                });
+            }
         });
     }
     // Update updates an object by primary key; it does not re-assign the pk value(s).
     update(obj) {
-        return __awaiter(this, void 0, void 0, function* () { return null; });
+        return __awaiter(this, void 0, void 0, function* () { return; });
     }
     // Upsert creates an object if it doesn't exit, otherwise it updates it.
     upsert(obj) {
-        return __awaiter(this, void 0, void 0, function* () { return null; });
+        return __awaiter(this, void 0, void 0, function* () { return; });
     }
     // Delete deletes a given object.
     delete(obj) {
@@ -192,7 +191,6 @@ class Invocation {
                 ids.push(pk.get(obj));
             }
             yield this.connection.query(queryBody, ids);
-            return null;
         });
     }
     // Truncate deletes *all* rows of a table using the truncate command.
@@ -209,7 +207,6 @@ class Invocation {
                 queryBody = queryBody + ' RESTART IDENTITY';
             }
             yield this.connection.query(queryBody);
-            return null;
         });
     }
 }
