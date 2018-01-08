@@ -1,6 +1,6 @@
 {
   "name": "nifty",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "nifty is a lite orm for typescript",
   "keywords": [
     "postgres",
