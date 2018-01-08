@@ -122,8 +122,8 @@ test('delete: can delete record given object mapping', async t => {
   await inv.query(createTableQuery);
   await inv.create(testRecord);
   await inv.delete(testRecord)
-  const err = await t.throws(inv.get(TestInvocation, testRecord.id));
-  t.truthy(err);
+  const res = await inv.get(TestInvocation, testRecord.id);
+  t.falsy(res);
   await inv.rollback();
 });
 

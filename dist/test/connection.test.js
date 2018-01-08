@@ -106,7 +106,7 @@ ava_1.default('inTx: can execute multiple calls in a transaction', (t) => __awai
     };
     const res = yield conn.inTx(txFn);
     t.is(res.name, 'test');
-    const { results } = yield conn.query('SELECT * FROM test_connection');
+    const { results } = yield conn.query(`SELECT * FROM test_connection WHERE name='secondone'`);
     t.is(results.rowCount, 0);
 }));
 //# sourceMappingURL=connection.test.js.map

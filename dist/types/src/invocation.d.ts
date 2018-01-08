@@ -14,7 +14,7 @@ export declare class Invocation {
     close(): Promise<void>;
     get<T>(typeDef: {
         new (): T;
-    }, ...ids: any[]): Promise<T>;
+    }, ...ids: any[]): Promise<T | null>;
     getAll<T>(typeDef: {
         new (): T;
     }): Promise<Array<T>>;

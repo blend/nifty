@@ -138,8 +138,8 @@ ava_1.default('delete: can delete record given object mapping', (t) => __awaiter
     yield inv.query(createTableQuery);
     yield inv.create(testRecord);
     yield inv.delete(testRecord);
-    const err = yield t.throws(inv.get(TestInvocation, testRecord.id));
-    t.truthy(err);
+    const res = yield inv.get(TestInvocation, testRecord.id);
+    t.falsy(res);
     yield inv.rollback();
 }));
 ava_1.default('createMany: adds multiple objects', (t) => __awaiter(this, void 0, void 0, function* () {

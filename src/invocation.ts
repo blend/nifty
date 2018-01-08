@@ -46,7 +46,7 @@ export class Invocation {
     await this.connection.release()
 	}
 
-	public async get<T>(typeDef: { new(): T; }, ...ids: any[]): Promise<T> {
+	public async get<T>(typeDef: { new(): T; }, ...ids: any[]): Promise<T | null> {
 		let ref: T = new typeDef()
 		const className = ref.constructor.name
 		let tableName = tableNameFor(className);
@@ -79,7 +79,9 @@ export class Invocation {
 			}
 		}
 
-    let res = await this.connection.query(queryBody, ids);
+		let res = await this.connection.query(queryBody, ids);
+		if (_.isEmpty(res.rows)) return null;
+		
     for (let col of readCols.all) {
       col.set(ref, res.rows[0][col.name]);
     }
@@ -113,7 +115,7 @@ export class Invocation {
 			queryBody += ` RETURNING ${serials.first().name}`;
 		}
 
-    const res = await this.connection.query(queryBody, colValues);
+		const res = await this.connection.query(queryBody, colValues);
     if (serials.len() > 0) {
       let serial = serials.first();
       serial.set(obj, res.rows[0][serial.name]);

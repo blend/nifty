@@ -78,6 +78,8 @@ class Invocation {
                 }
             }
             let res = yield this.connection.query(queryBody, ids);
+            if (_.isEmpty(res.rows))
+                return null;
             for (let col of readCols.all) {
                 col.set(ref, res.rows[0][col.name]);
             }

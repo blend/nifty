@@ -77,7 +77,7 @@ test('create/get: creates/gets given object', async t => {
   await conn.create(testObj);
   const hi = await conn.query(`SELECT * FROM test_connection`);
   const res = await conn.get(TestConnection, testObj.id);
-  t.is(res.name, 'test');
+  t.is(res!.name, 'test');
 });
 
 test('inTx: can execute multiple calls in a transaction', async t => {
@@ -89,7 +89,7 @@ test('inTx: can execute multiple calls in a transaction', async t => {
     testObj.name = 'test';
     await inv.create(testObj);
     const first = await inv.get(TestConnection, testObj.id);
-    t.is(first.name, 'test');
+    t.is(first!.name, 'test');
     await inv.query(`INSERT INTO test_connection(name) VALUES ('secondone')`);
     await inv.rollback();
     return first;
@@ -97,6 +97,6 @@ test('inTx: can execute multiple calls in a transaction', async t => {
 
   const res = await conn.inTx(txFn);
   t.is(res.name, 'test');
-  const { results } = await conn.query('SELECT * FROM test_connection');
+  const { results } = await conn.query(`SELECT * FROM test_connection WHERE name='secondone'`);
   t.is(results.rowCount, 0);
 });
