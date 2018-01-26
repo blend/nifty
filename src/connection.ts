@@ -150,6 +150,16 @@ export class Connection {
 		}
 	}
 
+	// Upsert opens a new connection and upserts the object.
+	public async upsert(obj: any): Promise<any> {
+		let inv = await this.invoke();
+		try {
+			return inv.upsert(obj)
+		} finally {
+			inv.close();
+		}
+	}
+
 	// Delete opens a new connection and deletes a given object.
 	public async delete(obj: any): Promise<void> {
 		let inv = await this.invoke();

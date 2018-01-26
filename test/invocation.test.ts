@@ -6,12 +6,26 @@ import { Table, Column } from '../src/decorators';
 import { connectionConfig } from './testConfig';
 
 const createTableQuery = 'CREATE TABLE IF NOT EXISTS test_invocation (id serial not null, name varchar(255), monies int)';
+
+const createTableQueryPk = 'CREATE TABLE IF NOT EXISTS test_invocation_pk (id serial not null, name varchar(255) primary key, monies int)';
 @Table('test_invocation')
 class TestInvocation {
   @Column('id', { PrimaryKey: true, Serial: true })
   id: number;
 
   @Column('name')
+  name: string;
+
+  @Column('monies')
+  monies: number;
+}
+
+@Table('test_invocation_pk')
+class TestInvocationPk {
+  @Column('id', { Serial: true })
+  id: number;
+
+  @Column('name', { PrimaryKey: true })
   name: string;
 
   @Column('monies')
@@ -105,13 +119,44 @@ test('create/get: can create and get record given object mapping', async t => {
   const inv = await createConnectionAndInvoke();
   const testRecord = new TestInvocation();
   testRecord.name = 'world test record';
+  testRecord.monies = 5;
   await inv.begin();
   await inv.query(createTableQuery);
   await inv.create(testRecord);
-  const res = await inv.get(TestInvocation, testRecord.id) as TestInvocation;
-  await inv.rollback();
+  let res = await inv.get(TestInvocation, testRecord.id) as TestInvocation;
   t.is(res.id, 1);
   t.is(res.name, 'world test record');
+  await inv.rollback();
+});
+
+test('update/upsert: updates and upserts', async t => {
+  const inv = await createConnectionAndInvoke();
+  const testRecord = new TestInvocationPk();
+  testRecord.name = 'world test record';
+  testRecord.monies = 5;
+  await inv.begin();
+  await inv.query(createTableQueryPk);
+  await inv.create(testRecord);
+  let res = await inv.get(TestInvocationPk, testRecord.name) as TestInvocationPk;
+  t.is(res.id, 1);
+  t.is(res.name, 'world test record');
+  res.monies = 4;
+  const test = await inv.update(res);
+  res = await inv.get(TestInvocationPk, testRecord.name) as TestInvocationPk;
+  t.is(res.id, 1);
+  t.is(res.monies, 4);
+  res.monies = 3;
+  await inv.upsert(res);
+  res = await inv.get(TestInvocationPk, testRecord.name) as TestInvocationPk;
+  t.is(res.id, 1);
+  t.is(res.monies, 3);
+  res.name = 'hello';
+  await inv.upsert(res);
+  res = await inv.get(TestInvocationPk, 'hello') as TestInvocationPk;
+  t.is(res.id, 3);
+  t.is(res.monies, 3);
+  t.is(res.name, 'hello');
+  await inv.rollback();
 });
 
 test('delete: can delete record given object mapping', async t => {

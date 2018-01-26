@@ -1,4 +1,4 @@
-import { Client } from 'pg';
+import { Client, QueryResult } from 'pg';
 import { Query } from './query';
 export interface InvocationConfig {
     client: Client;
@@ -21,7 +21,7 @@ export declare class Invocation {
     create(obj: any): Promise<void>;
     createMany(objs: any[]): Promise<void>;
     update<T>(obj: T): Promise<void>;
-    upsert<T>(obj: T): Promise<void>;
+    upsert<T>(obj: T): Promise<QueryResult>;
     delete(obj: any): Promise<void>;
     truncate<T>(typeDef: {
         new (): T;

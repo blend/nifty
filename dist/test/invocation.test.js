@@ -23,6 +23,7 @@ const connection_1 = require("../src/connection");
 const decorators_1 = require("../src/decorators");
 const testConfig_1 = require("./testConfig");
 const createTableQuery = 'CREATE TABLE IF NOT EXISTS test_invocation (id serial not null, name varchar(255), monies int)';
+const createTableQueryPk = 'CREATE TABLE IF NOT EXISTS test_invocation_pk (id serial not null, name varchar(255) primary key, monies int)';
 let TestInvocation = class TestInvocation {
 };
 __decorate([
@@ -40,6 +41,23 @@ __decorate([
 TestInvocation = __decorate([
     decorators_1.Table('test_invocation')
 ], TestInvocation);
+let TestInvocationPk = class TestInvocationPk {
+};
+__decorate([
+    decorators_1.Column('id', { Serial: true }),
+    __metadata("design:type", Number)
+], TestInvocationPk.prototype, "id", void 0);
+__decorate([
+    decorators_1.Column('name', { PrimaryKey: true }),
+    __metadata("design:type", String)
+], TestInvocationPk.prototype, "name", void 0);
+__decorate([
+    decorators_1.Column('monies'),
+    __metadata("design:type", Number)
+], TestInvocationPk.prototype, "monies", void 0);
+TestInvocationPk = __decorate([
+    decorators_1.Table('test_invocation_pk')
+], TestInvocationPk);
 let TestDifferent = class TestDifferent {
 };
 __decorate([
@@ -122,13 +140,43 @@ ava_1.default('create/get: can create and get record given object mapping', (t) 
     const inv = yield createConnectionAndInvoke();
     const testRecord = new TestInvocation();
     testRecord.name = 'world test record';
+    testRecord.monies = 5;
     yield inv.begin();
     yield inv.query(createTableQuery);
     yield inv.create(testRecord);
-    const res = yield inv.get(TestInvocation, testRecord.id);
-    yield inv.rollback();
+    let res = yield inv.get(TestInvocation, testRecord.id);
     t.is(res.id, 1);
     t.is(res.name, 'world test record');
+    yield inv.rollback();
+}));
+ava_1.default('update/upsert: updates and upserts', (t) => __awaiter(this, void 0, void 0, function* () {
+    const inv = yield createConnectionAndInvoke();
+    const testRecord = new TestInvocationPk();
+    testRecord.name = 'world test record';
+    testRecord.monies = 5;
+    yield inv.begin();
+    yield inv.query(createTableQueryPk);
+    yield inv.create(testRecord);
+    let res = yield inv.get(TestInvocationPk, testRecord.name);
+    t.is(res.id, 1);
+    t.is(res.name, 'world test record');
+    res.monies = 4;
+    const test = yield inv.update(res);
+    res = (yield inv.get(TestInvocationPk, testRecord.name));
+    t.is(res.id, 1);
+    t.is(res.monies, 4);
+    res.monies = 3;
+    yield inv.upsert(res);
+    res = (yield inv.get(TestInvocationPk, testRecord.name));
+    t.is(res.id, 1);
+    t.is(res.monies, 3);
+    res.name = 'hello';
+    yield inv.upsert(res);
+    res = (yield inv.get(TestInvocationPk, 'hello'));
+    t.is(res.id, 3);
+    t.is(res.monies, 3);
+    t.is(res.name, 'hello');
+    yield inv.rollback();
 }));
 ava_1.default('delete: can delete record given object mapping', (t) => __awaiter(this, void 0, void 0, function* () {
     const inv = yield createConnectionAndInvoke();

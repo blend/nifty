@@ -151,6 +151,18 @@ class Connection {
             }
         });
     }
+    // Upsert opens a new connection and upserts the object.
+    upsert(obj) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let inv = yield this.invoke();
+            try {
+                return inv.upsert(obj);
+            }
+            finally {
+                inv.close();
+            }
+        });
+    }
     // Delete opens a new connection and deletes a given object.
     delete(obj) {
         return __awaiter(this, void 0, void 0, function* () {

@@ -37,6 +37,7 @@ export declare class Connection {
     create(obj: any): Promise<void>;
     createMany(objs: any[]): Promise<void>;
     update(obj: any): Promise<void>;
+    upsert(obj: any): Promise<any>;
     delete(obj: any): Promise<void>;
     truncate<T>(typeDef: {
         new (): T;

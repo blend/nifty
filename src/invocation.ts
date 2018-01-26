@@ -81,8 +81,8 @@ export class Invocation {
 
 		let res = await this.connection.query(queryBody, ids);
 		if (_.isEmpty(res.rows)) return null;
-		
-    for (let col of readCols.all) {
+
+		for (let col of readCols.all) {
       col.set(ref, res.rows[0][col.name]);
     }
 		return ref;
@@ -170,10 +170,111 @@ export class Invocation {
   }
 
 	// Update updates an object by primary key; it does not re-assign the pk value(s).
-	public async update<T>(obj: T): Promise<void> { return; }
+	public async update<T>(obj: T): Promise<void> {		
+		const className = obj.constructor.name
+		const tableName = tableNameFor(className)
+		const cols = columnsFor(className)
+		const pks = cols.primaryKey()
+		const updateCols = cols.updateCols();
+		const updateValues = updateCols.columnValues(obj);
+
+		let values: any[] = [];
+		let queryBody = `UPDATE ${tableName} SET `
+
+		for (let i = 0; i < updateCols.len(); i++) {
+			const colName = updateCols.columnNames()[i];
+			queryBody = queryBody + colName + ' = ' + `$${i+1}`;
+
+			if (i < updateCols.len() - 1) {
+				queryBody = queryBody + ', '
+			}
+
+			values.push(updateCols.all[i].get(obj));
+		}
+
+		queryBody = queryBody + ' WHERE ';
+
+		// loop over the pks, add the tokens etc.
+		for (let i = 0; i < pks.len(); i++) {
+			const pk = pks.all[i];
+
+			queryBody = queryBody + pk.name + ' = ' + `$${updateCols.len() + i + 1}`;
+
+			if (i < pks.len() - 1) {
+				queryBody = queryBody + ' AND ';
+			}
+
+			values.push(pk.get(obj))
+		}
+
+    await this.connection.query(queryBody, values);
+	}
 
 	// Upsert creates an object if it doesn't exit, otherwise it updates it.
-	public async upsert<T>(obj: T): Promise<void> { return; }
+	public async upsert<T>(obj: T): Promise<QueryResult> { 		const className = obj.constructor.name
+		const tableName = tableNameFor(className)
+		const cols = columnsFor(className)
+		const pks = cols.primaryKey()
+		const writeCols = cols.notReadOnly().notSerial();
+		const updateCols = cols.updateCols();
+		const updateValues = updateCols.columnValues(obj);
+
+		let values: any[] = [];
+		let queryBody = `INSERT INTO ${tableName} (`
+
+		for (let i = 0; i < writeCols.len(); i++) {
+			const colName = writeCols.columnNames()[i];
+			queryBody = queryBody + colName;
+			if (i < writeCols.len() - 1) {
+				queryBody = queryBody + ', '
+			}
+		}
+
+		queryBody = queryBody + ') VALUES (';
+
+		for (let i = 0; i < writeCols.len(); i++) {
+			queryBody = queryBody + `$${i+1}`;
+			if (i < writeCols.len() - 1) {
+				queryBody = queryBody + ', '
+			}
+			values.push(writeCols.all[i].get(obj));
+		}
+
+		queryBody = queryBody + ')';
+
+
+		if (pks.len() > 0) {
+			const nameMap: { [key: string]: any } = {};
+			const writeColNames = writeCols.columnNames();
+			for (let i = 0; i < writeCols.len(); i++) {
+				nameMap[writeColNames[i]] = `$${i+1}`;
+			}
+
+			queryBody = queryBody + ' ON CONFLICT (';
+			const pkNames = pks.columnNames();
+			for (let i = 0; i < pks.len(); i++) {
+				queryBody = queryBody + pkNames[i];
+				if (i < pks.len() - 1) {
+					queryBody = queryBody + ', ';
+				}
+			}
+			queryBody = queryBody + ') DO UPDATE SET ';
+			const updateColNames = updateCols.columnNames();
+
+			for (let i = 0; i < updateCols.len(); i++) {
+				queryBody = queryBody + `${updateColNames[i]} = ${nameMap[updateColNames[i]]}`;
+				if (i < updateCols.len() - 1) {
+					queryBody = queryBody + ', '
+				}
+			}
+		}
+
+		const serial = cols.serial().first();
+
+		if (serial) queryBody = queryBody + ` RETURNING ${serial.name}`;
+		const res = await this.connection.query(queryBody, values);
+		return _.first(res.rows);
+	}
 
 	// Delete deletes a given object.
 	public async delete(obj: any): Promise<void> {
