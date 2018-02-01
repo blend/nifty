@@ -7,13 +7,4 @@ import * as metacache from './metacache';
 import * as query from './query';
 import * as interfaces from './interfaces';
 
-export {
-  columnInfo,
-  columns,
-  connection,
-  decorators,
-  invocation,
-  metacache,
-  query,
-  interfaces
-}
+export { columnInfo, columns, connection, decorators, invocation, metacache, query, interfaces };
