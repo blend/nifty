@@ -144,7 +144,7 @@ ava_1.default('create/get: can create and get record given object mapping', (t) 
     yield inv.begin();
     yield inv.query(createTableQuery);
     yield inv.create(testRecord);
-    let res = yield inv.get(TestInvocation, testRecord.id);
+    let res = (yield inv.get(TestInvocation, testRecord.id));
     t.is(res.id, 1);
     t.is(res.name, 'world test record');
     yield inv.rollback();
@@ -157,7 +157,7 @@ ava_1.default('update/upsert: updates and upserts', (t) => __awaiter(this, void 
     yield inv.begin();
     yield inv.query(createTableQueryPk);
     yield inv.create(testRecord);
-    let res = yield inv.get(TestInvocationPk, testRecord.name);
+    let res = (yield inv.get(TestInvocationPk, testRecord.name));
     t.is(res.id, 1);
     t.is(res.name, 'world test record');
     res.monies = 4;

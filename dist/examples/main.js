@@ -51,7 +51,6 @@ function main() {
         yield conn.create(md);
         console.log('creating object complete');
         console.log('created', md, md.ID);
-        // this seems anus tier but is necessary because typescript is not a real language.
         let verify = yield conn.get(MetadataTest, md.ID);
         console.log(verify);
     });
