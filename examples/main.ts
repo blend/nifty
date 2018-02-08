@@ -32,8 +32,7 @@ async function main() {
 	console.log('creating object complete');
 	console.log('created', md, md.ID);
 
-	// this seems anus tier but is necessary because typescript is not a real language.
-	let verify = await conn.get<MetadataTest>(MetadataTest, md.ID);
+	let verify = await conn.get(MetadataTest, md.ID);
 	console.log(verify);
 }
 main();

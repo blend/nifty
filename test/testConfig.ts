@@ -4,6 +4,6 @@ const connectionConfig: { [key: string]: string | number } = {
   username: 'testuser',
   password: 'testpassword',
   database: 'testuser'
-}
+};
 
 export { connectionConfig };

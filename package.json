@@ -15,7 +15,9 @@
     "build": "tsc -p .",
     "buildClean": "npm run clean && npm run build",
     "clean": "rm -rf ./dist",
-    "test": "bash ./docker/test.sh"
+    "test": "bash ./docker/test.sh",
+    "prettier": "prettier --print-width 120 --single-quote --trailing-comma none --parser typescript --write --with-node-modules \"src/**/*.ts\" \"test/**/*.ts\" \"*.js\"",
+    "prettierBuild": "prettier --print-width 120 --single-quote --trailing-comma none --parser typescript --write --with-node-modules --list-different \"src/**/*.ts\" \"test/**/*.ts\" \"*.js\""
   },
   "repository": "https://github.com/blendlabs/nifty",
   "author": "Will Charczuk",
@@ -31,6 +33,7 @@
     "@types/pg": "^7.1.4",
     "ava": "^0.22.0",
     "nyc": "^11.2.1",
+    "prettier": "^1.10.2",
     "typescript": "^2.5.3"
   },
   "ava": {

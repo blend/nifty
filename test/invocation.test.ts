@@ -5,19 +5,19 @@ import { Invocation } from '../src/invocation';
 import { Table, Column } from '../src/decorators';
 import { connectionConfig } from './testConfig';
 
-const createTableQuery = 'CREATE TABLE IF NOT EXISTS test_invocation (id serial not null, name varchar(255), monies int)';
+const createTableQuery =
+  'CREATE TABLE IF NOT EXISTS test_invocation (id serial not null, name varchar(255), monies int)';
 
-const createTableQueryPk = 'CREATE TABLE IF NOT EXISTS test_invocation_pk (id serial not null, name varchar(255) primary key, monies int, test varchar(32))';
+const createTableQueryPk =
+  'CREATE TABLE IF NOT EXISTS test_invocation_pk (id serial not null, name varchar(255) primary key, monies int, test varchar(32))';
 @Table('test_invocation')
 class TestInvocation {
   @Column('id', { PrimaryKey: true, Serial: true })
   id: number;
 
-  @Column('name')
-  name: string;
+  @Column('name') name: string;
 
-  @Column('monies')
-  monies: number;
+  @Column('monies') monies: number;
 }
 
 @Table('test_invocation_pk')
@@ -28,11 +28,9 @@ class TestInvocationPk {
   @Column('name', { PrimaryKey: true })
   name: string;
 
-  @Column('monies')
-  monies: number;
+  @Column('monies') monies: number;
 
-  @Column('test')
-  test: string;
+  @Column('test') test: string;
 }
 
 @Table('test_different')
@@ -40,8 +38,7 @@ class TestDifferent {
   @Column('id', { PrimaryKey: true, Serial: true })
   id: number;
 
-  @Column('name')
-  name: string;
+  @Column('name') name: string;
 }
 
 async function createConnectionAndInvoke() {
@@ -54,8 +51,8 @@ function createManyRecords(n: number) {
   const data = [];
   for (let i = 0; i < n; i++) {
     const item = new TestInvocation();
-    item.name = `item${i+1}`;
-    item.monies = i*2;
+    item.name = `item${i + 1}`;
+    item.monies = i * 2;
     data.push(item);
   }
   return data;
@@ -97,12 +94,12 @@ test('truncate: can delete all rows in table and restart serial identity', async
   await inv.begin();
   await inv.query(createTableQuery);
 
-  data.forEach(async (item) => {
+  data.forEach(async item => {
     await inv.create(item);
   });
   const res = await inv.query('SELECT * FROM test_invocation');
   t.is(res.results.rowCount, 5);
-  t.deepEqual(_.map(res.results.rows, 'id') , [1,2,3,4,5]);
+  t.deepEqual(_.map(res.results.rows, 'id'), [1, 2, 3, 4, 5]);
 
   await inv.truncate(TestInvocation);
   const emptyRes = await inv.query('SELECT * FROM test_invocation');
@@ -126,7 +123,7 @@ test('create/get: can create and get record given object mapping', async t => {
   await inv.begin();
   await inv.query(createTableQuery);
   await inv.create(testRecord);
-  let res = await inv.get(TestInvocation, testRecord.id) as TestInvocation;
+  let res = (await inv.get(TestInvocation, testRecord.id)) as TestInvocation;
   t.is(res.id, 1);
   t.is(res.name, 'world test record');
   await inv.rollback();
@@ -141,7 +138,7 @@ test('update/upsert: updates and upserts', async t => {
   await inv.begin();
   await inv.query(createTableQueryPk);
   await inv.create(testRecord);
-  let res = await inv.get(TestInvocationPk, testRecord.name) as TestInvocationPk;
+  let res = (await inv.get(TestInvocationPk, testRecord.name)) as TestInvocationPk;
   t.is(res.id, 1);
   t.is(res.name, 'world test record');
   t.is(res.test, 'hello');
@@ -149,7 +146,7 @@ test('update/upsert: updates and upserts', async t => {
   newRecord.name = 'world test record';
   newRecord.monies = 4;
   const test = await inv.update(newRecord);
-  res = await inv.get(TestInvocationPk, testRecord.name) as TestInvocationPk;
+  res = (await inv.get(TestInvocationPk, testRecord.name)) as TestInvocationPk;
   t.is(res.id, 1);
   t.is(res.monies, 4);
   t.is(res.test, 'hello');
@@ -157,13 +154,13 @@ test('update/upsert: updates and upserts', async t => {
   newRecord2.name = 'world test record';
   newRecord2.monies = 3;
   await inv.upsert(newRecord2);
-  res = await inv.get(TestInvocationPk, testRecord.name) as TestInvocationPk;
+  res = (await inv.get(TestInvocationPk, testRecord.name)) as TestInvocationPk;
   t.is(res.id, 1);
   t.is(res.monies, 3);
   t.is(res.test, 'hello');
   res.name = 'hello';
   await inv.upsert(res);
-  res = await inv.get(TestInvocationPk, 'hello') as TestInvocationPk;
+  res = (await inv.get(TestInvocationPk, 'hello')) as TestInvocationPk;
   t.is(res.id, 3);
   t.is(res.monies, 3);
   t.is(res.name, 'hello');
@@ -177,7 +174,7 @@ test('delete: can delete record given object mapping', async t => {
   await inv.begin();
   await inv.query(createTableQuery);
   await inv.create(testRecord);
-  await inv.delete(testRecord)
+  await inv.delete(testRecord);
   const res = await inv.get(TestInvocation, testRecord.id);
   t.falsy(res);
   await inv.rollback();

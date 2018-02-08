@@ -171,6 +171,7 @@ class Invocation {
             const cols = metacache_1.columnsFor(className);
             const pks = cols.primaryKey();
             const updateCols = cols.updateCols().notNullOfObj(obj);
+            const updateValues = updateCols.columnValues(obj);
             let values = [];
             let queryBody = `UPDATE ${tableName} SET `;
             for (let i = 0; i < updateCols.len(); i++) {
@@ -201,8 +202,9 @@ class Invocation {
             const tableName = metacache_1.tableNameFor(className);
             const cols = metacache_1.columnsFor(className);
             const pks = cols.primaryKey();
-            const writeCols = cols.notReadOnly().notSerial();
+            const writeCols = cols.notReadOnly().notSerial().notNullOfObj(obj);
             const updateCols = cols.updateCols().notNullOfObj(obj);
+            const updateValues = updateCols.columnValues(obj);
             let values = [];
             let queryBody = `INSERT INTO ${tableName} (`;
             for (let i = 0; i < writeCols.len(); i++) {
@@ -247,8 +249,6 @@ class Invocation {
             const serial = cols.serial().first();
             if (serial)
                 queryBody = queryBody + ` RETURNING ${serial.name}`;
-            console.log('queryBody is: ', JSON.stringify(queryBody, null, 2));
-            console.log('values is: ', JSON.stringify(values, null, 2));
             const res = yield this.connection.query(queryBody, values);
             return _.first(res.rows);
         });

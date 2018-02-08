@@ -10,8 +10,7 @@ class TestConnection {
   @Column('id', { PrimaryKey: true, Serial: true })
   id: number;
 
-  @Column('name')
-  name: string;
+  @Column('name') name: string;
 }
 
 test.before(async t => {
@@ -93,7 +92,7 @@ test('inTx: can execute multiple calls in a transaction', async t => {
     await inv.query(`INSERT INTO test_connection(name) VALUES ('secondone')`);
     await inv.rollback();
     return first;
-  }
+  };
 
   const res = await conn.inTx(txFn);
   t.is(res.name, 'test');
