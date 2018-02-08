@@ -46,6 +46,15 @@ class Columns {
         }
         return values;
     }
+    notNullOfObj(instance) {
+        const filtered = new Array();
+        for (let col of this.all) {
+            if (col.get(instance)) {
+                filtered.push(col);
+            }
+        }
+        return new Columns().addMany(filtered);
+    }
     tokens() {
         const tokens = new Array();
         for (let i = 0; i < this.all.length; i++) {

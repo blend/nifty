@@ -9,6 +9,7 @@ export declare class Columns {
     len(): number;
     columnNames(): Array<string>;
     columnValues(instance: any): Array<any>;
+    notNullOfObj(instance: any): Columns;
     tokens(): Array<string>;
     primaryKey(): Columns;
     notPrimaryKey(): Columns;

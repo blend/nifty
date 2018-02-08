@@ -23,7 +23,7 @@ const connection_1 = require("../src/connection");
 const decorators_1 = require("../src/decorators");
 const testConfig_1 = require("./testConfig");
 const createTableQuery = 'CREATE TABLE IF NOT EXISTS test_invocation (id serial not null, name varchar(255), monies int)';
-const createTableQueryPk = 'CREATE TABLE IF NOT EXISTS test_invocation_pk (id serial not null, name varchar(255) primary key, monies int)';
+const createTableQueryPk = 'CREATE TABLE IF NOT EXISTS test_invocation_pk (id serial not null, name varchar(255) primary key, monies int, test varchar(32))';
 let TestInvocation = class TestInvocation {
 };
 __decorate([
@@ -55,6 +55,10 @@ __decorate([
     decorators_1.Column('monies'),
     __metadata("design:type", Number)
 ], TestInvocationPk.prototype, "monies", void 0);
+__decorate([
+    decorators_1.Column('test'),
+    __metadata("design:type", String)
+], TestInvocationPk.prototype, "test", void 0);
 TestInvocationPk = __decorate([
     decorators_1.Table('test_invocation_pk')
 ], TestInvocationPk);
@@ -154,22 +158,30 @@ ava_1.default('update/upsert: updates and upserts', (t) => __awaiter(this, void 
     const testRecord = new TestInvocationPk();
     testRecord.name = 'world test record';
     testRecord.monies = 5;
+    testRecord.test = 'hello';
     yield inv.begin();
     yield inv.query(createTableQueryPk);
     yield inv.create(testRecord);
     let res = yield inv.get(TestInvocationPk, testRecord.name);
     t.is(res.id, 1);
     t.is(res.name, 'world test record');
-    res.monies = 4;
-    const test = yield inv.update(res);
+    t.is(res.test, 'hello');
+    const newRecord = new TestInvocationPk();
+    newRecord.name = 'world test record';
+    newRecord.monies = 4;
+    const test = yield inv.update(newRecord);
     res = (yield inv.get(TestInvocationPk, testRecord.name));
     t.is(res.id, 1);
     t.is(res.monies, 4);
-    res.monies = 3;
-    yield inv.upsert(res);
+    t.is(res.test, 'hello');
+    const newRecord2 = new TestInvocationPk();
+    newRecord2.name = 'world test record';
+    newRecord2.monies = 3;
+    yield inv.upsert(newRecord2);
     res = (yield inv.get(TestInvocationPk, testRecord.name));
     t.is(res.id, 1);
     t.is(res.monies, 3);
+    t.is(res.test, 'hello');
     res.name = 'hello';
     yield inv.upsert(res);
     res = (yield inv.get(TestInvocationPk, 'hello'));

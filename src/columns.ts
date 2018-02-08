@@ -55,6 +55,16 @@ export class Columns {
 		return values;
 	}
 
+	public notNullOfObj(instance: any): Columns {
+		const filtered = new Array<ColumnInfo>();
+		for (let col of this.all) {
+			if (col.get(instance)) {
+				filtered.push(col);
+			}
+		}
+		return new Columns().addMany(filtered);
+	}
+
 	public tokens(): Array<string> {
 		const tokens = new Array<string>();
 		for (let i = 0; i < this.all.length; i++) {

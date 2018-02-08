@@ -7,7 +7,7 @@ import { connectionConfig } from './testConfig';
 
 const createTableQuery = 'CREATE TABLE IF NOT EXISTS test_invocation (id serial not null, name varchar(255), monies int)';
 
-const createTableQueryPk = 'CREATE TABLE IF NOT EXISTS test_invocation_pk (id serial not null, name varchar(255) primary key, monies int)';
+const createTableQueryPk = 'CREATE TABLE IF NOT EXISTS test_invocation_pk (id serial not null, name varchar(255) primary key, monies int, test varchar(32))';
 @Table('test_invocation')
 class TestInvocation {
   @Column('id', { PrimaryKey: true, Serial: true })
@@ -30,6 +30,9 @@ class TestInvocationPk {
 
   @Column('monies')
   monies: number;
+
+  @Column('test')
+  test: string;
 }
 
 @Table('test_different')
@@ -134,22 +137,30 @@ test('update/upsert: updates and upserts', async t => {
   const testRecord = new TestInvocationPk();
   testRecord.name = 'world test record';
   testRecord.monies = 5;
+  testRecord.test = 'hello';
   await inv.begin();
   await inv.query(createTableQueryPk);
   await inv.create(testRecord);
   let res = await inv.get(TestInvocationPk, testRecord.name) as TestInvocationPk;
   t.is(res.id, 1);
   t.is(res.name, 'world test record');
-  res.monies = 4;
-  const test = await inv.update(res);
+  t.is(res.test, 'hello');
+  const newRecord = new TestInvocationPk();
+  newRecord.name = 'world test record';
+  newRecord.monies = 4;
+  const test = await inv.update(newRecord);
   res = await inv.get(TestInvocationPk, testRecord.name) as TestInvocationPk;
   t.is(res.id, 1);
   t.is(res.monies, 4);
-  res.monies = 3;
-  await inv.upsert(res);
+  t.is(res.test, 'hello');
+  const newRecord2 = new TestInvocationPk();
+  newRecord2.name = 'world test record';
+  newRecord2.monies = 3;
+  await inv.upsert(newRecord2);
   res = await inv.get(TestInvocationPk, testRecord.name) as TestInvocationPk;
   t.is(res.id, 1);
   t.is(res.monies, 3);
+  t.is(res.test, 'hello');
   res.name = 'hello';
   await inv.upsert(res);
   res = await inv.get(TestInvocationPk, 'hello') as TestInvocationPk;

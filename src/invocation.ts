@@ -175,8 +175,7 @@ export class Invocation {
 		const tableName = tableNameFor(className)
 		const cols = columnsFor(className)
 		const pks = cols.primaryKey()
-		const updateCols = cols.updateCols();
-		const updateValues = updateCols.columnValues(obj);
+		const updateCols = cols.updateCols().notNullOfObj(obj);
 
 		let values: any[] = [];
 		let queryBody = `UPDATE ${tableName} SET `
@@ -211,13 +210,13 @@ export class Invocation {
 	}
 
 	// Upsert creates an object if it doesn't exit, otherwise it updates it.
-	public async upsert<T>(obj: T): Promise<QueryResult> { 		const className = obj.constructor.name
+	public async upsert<T>(obj: T): Promise<QueryResult> { 		
+		const className = obj.constructor.name
 		const tableName = tableNameFor(className)
 		const cols = columnsFor(className)
 		const pks = cols.primaryKey()
 		const writeCols = cols.notReadOnly().notSerial();
-		const updateCols = cols.updateCols();
-		const updateValues = updateCols.columnValues(obj);
+		const updateCols = cols.updateCols().notNullOfObj(obj);
 
 		let values: any[] = [];
 		let queryBody = `INSERT INTO ${tableName} (`
