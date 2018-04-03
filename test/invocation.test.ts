@@ -144,11 +144,11 @@ test('update/upsert: updates and upserts', async t => {
   t.is(res.test, 'hello');
   const newRecord = new TestInvocationPk();
   newRecord.name = 'world test record';
-  newRecord.monies = 4;
+  newRecord.monies = 0;
   const test = await inv.update(newRecord);
   res = (await inv.get(TestInvocationPk, testRecord.name)) as TestInvocationPk;
   t.is(res.id, 1);
-  t.is(res.monies, 4);
+  t.is(res.monies, 0);
   t.is(res.test, 'hello');
   const newRecord2 = new TestInvocationPk();
   newRecord2.name = 'world test record';
@@ -159,10 +159,11 @@ test('update/upsert: updates and upserts', async t => {
   t.is(res.monies, 3);
   t.is(res.test, 'hello');
   res.name = 'hello';
+  res.monies = 0;
   await inv.upsert(res);
   res = (await inv.get(TestInvocationPk, 'hello')) as TestInvocationPk;
   t.is(res.id, 3);
-  t.is(res.monies, 3);
+  t.is(res.monies, 0);
   t.is(res.name, 'hello');
   await inv.rollback();
 });

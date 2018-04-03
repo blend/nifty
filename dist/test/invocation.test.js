@@ -168,11 +168,11 @@ ava_1.default('update/upsert: updates and upserts', (t) => __awaiter(this, void 
     t.is(res.test, 'hello');
     const newRecord = new TestInvocationPk();
     newRecord.name = 'world test record';
-    newRecord.monies = 4;
+    newRecord.monies = 0;
     const test = yield inv.update(newRecord);
     res = (yield inv.get(TestInvocationPk, testRecord.name));
     t.is(res.id, 1);
-    t.is(res.monies, 4);
+    t.is(res.monies, 0);
     t.is(res.test, 'hello');
     const newRecord2 = new TestInvocationPk();
     newRecord2.name = 'world test record';
@@ -183,10 +183,11 @@ ava_1.default('update/upsert: updates and upserts', (t) => __awaiter(this, void 
     t.is(res.monies, 3);
     t.is(res.test, 'hello');
     res.name = 'hello';
+    res.monies = 0;
     yield inv.upsert(res);
     res = (yield inv.get(TestInvocationPk, 'hello'));
     t.is(res.id, 3);
-    t.is(res.monies, 3);
+    t.is(res.monies, 0);
     t.is(res.name, 'hello');
     yield inv.rollback();
 }));

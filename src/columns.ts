@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import { ColumnInfo } from './column_info';
 
 export class Columns {
@@ -58,7 +59,7 @@ export class Columns {
   public notNullOfObj(instance: any): Columns {
     const filtered = new Array<ColumnInfo>();
     for (let col of this.all) {
-      if (col.get(instance)) {
+      if (!_.isNil(col.get(instance))) {
         filtered.push(col);
       }
     }

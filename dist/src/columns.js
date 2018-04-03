@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const _ = require("lodash");
 const column_info_1 = require("./column_info");
 class Columns {
     constructor() {
@@ -49,7 +50,7 @@ class Columns {
     notNullOfObj(instance) {
         const filtered = new Array();
         for (let col of this.all) {
-            if (col.get(instance)) {
+            if (!_.isNil(col.get(instance))) {
                 filtered.push(col);
             }
         }
